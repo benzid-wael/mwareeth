@@ -301,3 +301,121 @@ class FamilyTree:
                     for grandchild in relationship.person.children
                 ]
             )
+
+    def visualize(self) -> str:
+        """
+        Generate a visual representation of the family tree.
+
+        Returns:
+            A string representation of the family tree, where each line represents a relationship.
+        """
+        lines = []
+        
+        # Add the deceased person as the root
+        lines.append(f"Deceased: {self.deceased.name} ({self.deceased.gender.value})")
+        lines.append("")
+        
+        # Add ancestors
+        lines.append("=== Ancestors ===")
+        
+        # Parents
+        father = self.get_relatives(RelationshipType.FATHER)
+        if father:
+            father_person = list(father)[0]
+            lines.append(f"Father: {father_person.name}")
+        
+        mother = self.get_relatives(RelationshipType.MOTHER)
+        if mother:
+            mother_person = list(mother)[0]
+            lines.append(f"Mother: {mother_person.name}")
+        
+        # Grandparents
+        grandfathers = self.get_relatives(RelationshipType.GRANDFATHER)
+        if grandfathers:
+            lines.append("Grandfathers:")
+            for grandfather in grandfathers:
+                # Determine if paternal or maternal
+                lines.append(f"  - {grandfather.name}")
+        
+        grandmothers = self.get_relatives(RelationshipType.GRANDMOTHER)
+        if grandmothers:
+            lines.append("Grandmothers:")
+            for grandmother in grandmothers:
+                # Determine if paternal or maternal
+                lines.append(f"  - {grandmother.name}")
+        
+        lines.append("")
+        
+        # Add siblings
+        brothers = self.get_relatives(RelationshipType.BROTHER)
+        sisters = self.get_relatives(RelationshipType.SISTER)
+        if brothers or sisters:
+            lines.append("=== Siblings ===")
+            
+            if brothers:
+                lines.append("Brothers:")
+                for brother in brothers:
+                    lines.append(f"  - {brother.name}")
+            
+            if sisters:
+                lines.append("Sisters:")
+                for sister in sisters:
+                    lines.append(f"  - {sister.name}")
+            
+            lines.append("")
+        
+        # Add extended family
+        uncles = self.get_relatives(RelationshipType.UNCLE)
+        aunts = self.get_relatives(RelationshipType.AUNT)
+        cousins = self.get_relatives(RelationshipType.COUSIN)
+        
+        if uncles or aunts or cousins:
+            lines.append("=== Extended Family ===")
+            
+            if uncles:
+                lines.append("Uncles:")
+                for uncle in uncles:
+                    lines.append(f"  - {uncle.name}")
+            
+            if aunts:
+                lines.append("Aunts:")
+                for aunt in aunts:
+                    lines.append(f"  - {aunt.name}")
+            
+            if cousins:
+                lines.append("Cousins:")
+                for cousin in cousins:
+                    lines.append(f"  - {cousin.name} ({cousin.gender.value})")
+            
+            lines.append("")
+        
+        # Add descendants
+        sons = self.get_relatives(RelationshipType.SON)
+        daughters = self.get_relatives(RelationshipType.DAUGHTER)
+        
+        if sons or daughters:
+            lines.append("=== Descendants ===")
+            
+            if sons:
+                lines.append("Sons:")
+                for son in sons:
+                    lines.append(f"  - {son.name}")
+                    # Add grandchildren
+                    if son.children:
+                        lines.append("    Grandchildren:")
+                        for grandchild in son.children:
+                            gender = "Son" if grandchild.gender == Gender.MALE else "Daughter"
+                            lines.append(f"      - {grandchild.name} ({gender})")
+            
+            if daughters:
+                lines.append("Daughters:")
+                for daughter in daughters:
+                    lines.append(f"  - {daughter.name}")
+                    # Add grandchildren
+                    if daughter.children:
+                        lines.append("    Grandchildren:")
+                        for grandchild in daughter.children:
+                            gender = "Son" if grandchild.gender == Gender.MALE else "Daughter"
+                            lines.append(f"      - {grandchild.name} ({gender})")
+        
+        return "\n".join(lines)

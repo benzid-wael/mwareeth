@@ -3,6 +3,7 @@ Unit tests for the person module.
 """
 
 import unittest
+
 from ..person import Person, Gender, Religion
 
 
