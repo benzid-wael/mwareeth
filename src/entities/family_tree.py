@@ -48,6 +48,7 @@ class RelationshipType(Enum):
     # Children
     SON = "son"
     DAUGHTER = "daughter"
+    # FIXME(wbenzid): add grandson and granddaughter
 
 
 # ---- Relationship Mappings ----
@@ -385,7 +386,6 @@ class FamilyTree:
         # Process the stack
         while stack:
             relationship = stack.pop()
-            
             # Check for circular references
             if id(relationship.person) in seen:
                 raise ValueError("Circular reference detected in family tree")

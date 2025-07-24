@@ -41,6 +41,15 @@ class Person:
     def is_alive(self) -> bool:
         return self.death_year is None
 
+    @property
+    def fullname(self) -> str:
+        fullname = self.name.lower()
+        father = self.father
+        while father:
+            fullname = f"{father.name.lower()}>{fullname}"
+            father = father.father
+        return fullname
+
     def add_father(self, father: "Person") -> "Person":
         if self.father and self.father != father:
             raise ValueError("Cannot replace father!")
