@@ -8,8 +8,8 @@ import os
 # Add the parent directory to the Python path so we can import from src
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.person import Person, Gender
-from src.family_tree import FamilyTree
+from src.entities.person import Person, Gender
+from src.entities.family_tree import FamilyTree
 
 
 def create_sample_family():
