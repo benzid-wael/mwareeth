@@ -14,6 +14,11 @@ if ! brew list tcl-tk &> /dev/null; then
     brew install tcl-tk
 fi
 
+if ! brew list graphviz &> /dev/null; then
+    echo "Installing graphviz with Homebrew..."
+    brew install graphviz
+fi
+
 # Get the tcl-tk installation path
 TCL_TK_PATH=$(brew --prefix tcl-tk)
 echo "Found Tcl/Tk at: $TCL_TK_PATH"

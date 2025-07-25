@@ -8,6 +8,7 @@ import json
 import os
 import sys
 from typing import Dict, List, Optional, Tuple, Any
+from pathlib import Path
 
 from ..family_tree_builder import FamilyTreeBuilder
 from ..entities.person import Gender, Religion
@@ -40,6 +41,13 @@ class MwareethGUI:
         self.root.title(_("Mwareeth - Islamic Inheritance Calculator"))
         self.root.geometry("1000x700")
         
+        # Load icons
+        self.load_icons()
+        
+        # Set application icon
+        if hasattr(self, "app_icon"):
+            self.root.iconphoto(True, self.app_icon)
+        
         # Set up the main menu
         self.setup_menu()
         
@@ -61,6 +69,43 @@ class MwareethGUI:
         self.status_var.set(_("Ready"))
         self.status_bar = ttk.Label(self.root, textvariable=self.status_var, relief=tk.SUNKEN, anchor=tk.W)
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+    
+    def load_icons(self):
+        """Load icons for the application."""
+        # Get the path to the icons directory
+        current_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+        icons_dir = current_dir / "assets" / "icons"
+        
+        # Check if the icons directory exists
+        if not icons_dir.exists():
+            print("Icons directory not found. Icons will not be loaded.")
+            return
+        
+        try:
+            # Load main application icon
+            app_icon_path = icons_dir / "app_icon_64.png"
+            if app_icon_path.exists():
+                self.app_icon = tk.PhotoImage(file=str(app_icon_path))
+            
+            # Load function-specific icons
+            icon_files = {
+                "add_person": "add_person.png",
+                "add_relationship": "add_relationship.png",
+                "calculate_inheritance": "calculate_inheritance.png",
+                "visualize_tree": "visualize_tree.png",
+                "save_load": "save_load.png",
+                "male": "male.png",
+                "female": "female.png",
+                "deceased": "deceased.png"
+            }
+            
+            self.icons = {}
+            for icon_name, file_name in icon_files.items():
+                icon_path = icons_dir / file_name
+                if icon_path.exists():
+                    self.icons[icon_name] = tk.PhotoImage(file=str(icon_path))
+        except Exception as e:
+            print(f"Error loading icons: {e}")
     
     def setup_menu(self):
         """Set up the application menu."""
@@ -105,35 +150,54 @@ class MwareethGUI:
         person_form_frame = ttk.LabelFrame(left_frame, text=_("Add Person"))
         person_form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
-        self.person_form = PersonForm(person_form_frame, self.add_person)
+        self.person_form = PersonForm(person_form_frame, self.add_person, 
+                                     self.icons if hasattr(self, "icons") else None)
         
         # Right frame: Add relationship form
         relationship_form_frame = ttk.LabelFrame(right_frame, text=_("Add Relationship"))
         relationship_form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
-        self.relationship_form = RelationshipForm(relationship_form_frame, self.add_relationship)
+        self.relationship_form = RelationshipForm(
+            relationship_form_frame,
+            self.add_relationship,
+            self.icons if hasattr(self, "icons") else None,
+        )
         
         # People list
         people_frame = ttk.LabelFrame(left_frame, text=_("People"))
         people_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
+        # Create a frame to hold the treeview and scrollbar
+        tree_frame = ttk.Frame(people_frame)
+        tree_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Add scrollbar first
+        scrollbar = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
         # Create a treeview for the people list
-        self.people_tree = ttk.Treeview(people_frame, columns=("name", "gender", "deceased"), show="headings")
+        self.people_tree = ttk.Treeview(tree_frame, columns=("name", "gender", "deceased"), show="headings",
+                                       yscrollcommand=scrollbar.set)
         self.people_tree.heading("name", text=_("Name"))
         self.people_tree.heading("gender", text=_("Gender"))
         self.people_tree.heading("deceased", text=_("Deceased"))
         self.people_tree.column("name", width=150)
         self.people_tree.column("gender", width=100)
         self.people_tree.column("deceased", width=100)
-        self.people_tree.pack(fill=tk.BOTH, expand=True)
+        self.people_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
-        # Add scrollbar
-        scrollbar = ttk.Scrollbar(people_frame, orient=tk.VERTICAL, command=self.people_tree.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.people_tree.configure(yscrollcommand=scrollbar.set)
+        # Configure the scrollbar to work with the treeview
+        scrollbar.config(command=self.people_tree.yview)
         
         # Set as deceased button
-        set_deceased_button = ttk.Button(people_frame, text=_("Set as Deceased"), command=self.set_as_deceased)
+        set_deceased_button = ttk.Button(
+            people_frame, 
+            text=_("Set as Deceased"), 
+            command=self.set_as_deceased,
+            image=self.icons.get("deceased") if hasattr(self, "icons") and "deceased" in self.icons else None,
+            compound=tk.LEFT,
+            padding=(5, 2)
+        )
         set_deceased_button.pack(pady=5)
     
     def setup_visualization_tab(self):
@@ -146,7 +210,14 @@ class MwareethGUI:
         self.family_tree_view.pack(fill=tk.BOTH, expand=True)
         
         # Add a button to refresh the visualization
-        refresh_button = ttk.Button(visualization_tab, text=_("Refresh"), command=self.refresh_visualization)
+        refresh_button = ttk.Button(
+            visualization_tab, 
+            text=_("Refresh"), 
+            command=self.refresh_visualization,
+            image=self.icons.get("visualize_tree") if hasattr(self, "icons") and "visualize_tree" in self.icons else None,
+            compound=tk.LEFT,
+            padding=(5, 2)
+        )
         refresh_button.pack(pady=5)
     
     def setup_inheritance_tab(self):
@@ -164,7 +235,14 @@ class MwareethGUI:
         self.inheritance_text.configure(yscrollcommand=scrollbar.set)
         
         # Add a button to calculate inheritance
-        calculate_button = ttk.Button(inheritance_tab, text=_("Calculate Inheritance"), command=self.calculate_inheritance)
+        calculate_button = ttk.Button(
+            inheritance_tab, 
+            text=_("Calculate Inheritance"), 
+            command=self.calculate_inheritance,
+            image=self.icons.get("calculate_inheritance") if hasattr(self, "icons") and "calculate_inheritance" in self.icons else None,
+            compound=tk.LEFT,
+            padding=(5, 2)
+        )
         calculate_button.pack(pady=5)
     
     def add_person(self, name: str, gender: str, religion: str, birth_year: Optional[int], death_year: Optional[int], is_deceased: bool) -> None:

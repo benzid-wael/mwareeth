@@ -4,7 +4,7 @@ This module provides form components for the GUI.
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Dict, Any
 
 from ..entities.person import Gender, Religion
 from ..i18n import _
@@ -15,16 +15,18 @@ class PersonForm(ttk.Frame):
     A form for adding people to the family tree.
     """
     
-    def __init__(self, parent, callback: Callable):
+    def __init__(self, parent, callback: Callable, icons: Dict[str, Any] = None):
         """
         Initialize the person form.
         
         Args:
             parent: The parent widget
             callback: The function to call when the form is submitted
+            icons: Dictionary of icons to use for the form
         """
         super().__init__(parent)
         self.callback = callback
+        self.icons = icons or {}
         
         # Create form fields
         self.create_widgets()
@@ -65,7 +67,15 @@ class PersonForm(ttk.Frame):
         ttk.Checkbutton(self, text=_("Is Deceased"), variable=self.is_deceased_var).grid(row=5, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5)
         
         # Submit button
-        ttk.Button(self, text=_("Add Person"), command=self.submit).grid(row=6, column=0, columnspan=2, pady=10)
+        add_person_button = ttk.Button(
+            self, 
+            text=_("Add Person"), 
+            command=self.submit,
+            image=self.icons.get("add_person") if "add_person" in self.icons else None,
+            compound=tk.LEFT,
+            padding=(5, 2)
+        )
+        add_person_button.grid(row=6, column=0, columnspan=2, pady=10)
         
         # Configure grid
         self.columnconfigure(1, weight=1)
@@ -111,16 +121,18 @@ class RelationshipForm(ttk.Frame):
     A form for adding relationships between people.
     """
     
-    def __init__(self, parent, callback: Callable):
+    def __init__(self, parent, callback: Callable, icons: Dict[str, Any] = None):
         """
         Initialize the relationship form.
         
         Args:
             parent: The parent widget
             callback: The function to call when the form is submitted
+            icons: Dictionary of icons to use for the form
         """
         super().__init__(parent)
         self.callback = callback
+        self.icons = icons or {}
         self.people = []
         
         # Create form fields
@@ -149,7 +161,15 @@ class RelationshipForm(ttk.Frame):
         self.relative_combo.grid(row=2, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Submit button
-        ttk.Button(self, text=_("Add Relationship"), command=self.submit).grid(row=3, column=0, columnspan=2, pady=10)
+        add_relationship_button = ttk.Button(
+            self, 
+            text=_("Add Relationship"), 
+            command=self.submit,
+            image=self.icons.get("add_relationship") if "add_relationship" in self.icons else None,
+            compound=tk.LEFT,
+            padding=(5, 2)
+        )
+        add_relationship_button.grid(row=3, column=0, columnspan=2, pady=10)
         
         # Configure grid
         self.columnconfigure(1, weight=1)
