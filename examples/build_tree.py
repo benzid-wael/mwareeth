@@ -4,12 +4,11 @@ import os
 # Add the parent directory to the Python path so we can import from src
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.family_tree_builder import FamilyTreeBuilder
-
+from mwareeth.family_tree_builder import FamilyTreeBuilder
 
 if __name__ == "__main__":
     # Create a new family tree builder
-    builder = FamilyTreeBuilder()
+    builder = FamilyTreeBuilder(language="en")
     
     # Build the family tree interactively
     tree = builder.interactive_build()

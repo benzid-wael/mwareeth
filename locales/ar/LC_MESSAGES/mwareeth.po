@@ -1,0 +1,318 @@
+# Arabic translations for mwareeth.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the mwareeth project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+msgid ""
+msgstr ""
+"Project-Id-Version: mwareeth 0.0.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-07-25 21:38+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ar\n"
+"Language-Team: ar <LL@li.org>\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : "
+"n%100>=3 && n%100<=10 ? 3 : n%100>=0 && n%100<=2 ? 4 : 5);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: mwareeth/family_tree_builder.py:116
+#, python-brace-format
+msgid "A person with the name '{name}' already exists"
+msgstr "يوجد بالفعل شخص باسم '{name}'"
+
+#: mwareeth/family_tree_builder.py:122
+#, python-brace-format
+msgid "Invalid gender: {gender}. Must be 'male' or 'female'"
+msgstr "جنس غير صالح: {gender}. يجب أن يكون 'ذكر' أو 'أنثى'"
+
+#: mwareeth/family_tree_builder.py:145
+msgid "A deceased person is already set"
+msgstr "تم تعيين شخص متوفى بالفعل"
+
+#: mwareeth/family_tree_builder.py:164 mwareeth/family_tree_builder.py:188
+#: mwareeth/family_tree_builder.py:190 mwareeth/family_tree_builder.py:564
+#: mwareeth/family_tree_builder.py:581
+#, python-brace-format
+msgid "Person '{name}' does not exist"
+msgstr "الشخص '{name}' غير موجود"
+
+#: mwareeth/entities/family_tree.py:434 mwareeth/family_tree_builder.py:196
+#: mwareeth/family_tree_builder.py:568 mwareeth/family_tree_builder.py:653
+msgid "father"
+msgstr "الأب"
+
+#: mwareeth/entities/family_tree.py:439 mwareeth/family_tree_builder.py:198
+#: mwareeth/family_tree_builder.py:568 mwareeth/family_tree_builder.py:657
+msgid "mother"
+msgstr "الأم"
+
+#: mwareeth/family_tree_builder.py:200 mwareeth/family_tree_builder.py:568
+msgid "child"
+msgstr "الطفل"
+
+#: mwareeth/family_tree_builder.py:202 mwareeth/family_tree_builder.py:568
+msgid "spouse"
+msgstr "الزوج/الزوجة"
+
+#: mwareeth/family_tree_builder.py:206 mwareeth/family_tree_builder.py:576
+#, python-brace-format
+msgid "Invalid relationship type: {relation}"
+msgstr "نوع علاقة غير صالح: {relation}"
+
+#: mwareeth/family_tree_builder.py:273 mwareeth/family_tree_builder.py:361
+msgid "No deceased person is set"
+msgstr "لم يتم تعيين شخص متوفى"
+
+#: mwareeth/family_tree_builder.py:280
+#, python-brace-format
+msgid "Circular reference detected involving {name}"
+msgstr "تم اكتشاف مرجع دائري يتضمن {name}"
+
+#: mwareeth/family_tree_builder.py:288
+#, python-brace-format
+msgid "Inconsistent father-child relationship for {name}"
+msgstr "علاقة أب-طفل غير متسقة لـ {name}"
+
+#: mwareeth/family_tree_builder.py:292
+#, python-brace-format
+msgid "Inconsistent mother-child relationship for {name}"
+msgstr "علاقة أم-طفل غير متسقة لـ {name}"
+
+#: mwareeth/family_tree_builder.py:297
+#, python-brace-format
+msgid "Inconsistent spousal relationship between {name1} and {name2}"
+msgstr "علاقة زوجية غير متسقة بين {name1} و {name2}"
+
+#: mwareeth/family_tree_builder.py:357 mwareeth/family_tree_builder.py:526
+#: mwareeth/family_tree_builder.py:595
+#, python-brace-format
+msgid "Invalid family tree: {errors}"
+msgstr "شجرة عائلة غير صالحة: {errors}"
+
+#: mwareeth/family_tree_builder.py:475
+msgid "Welcome to the Family Tree Builder!"
+msgstr "مرحبًا بك في منشئ شجرة العائلة!"
+
+#: mwareeth/family_tree_builder.py:476
+msgid "Let's start by adding the deceased person (the focal point of the tree)."
+msgstr "لنبدأ بإضافة الشخص المتوفى (نقطة محورية للشجرة)."
+
+#: mwareeth/family_tree_builder.py:479 mwareeth/family_tree_builder.py:537
+msgid "Name"
+msgstr "الاسم"
+
+#: mwareeth/family_tree_builder.py:480 mwareeth/family_tree_builder.py:538
+msgid "Gender"
+msgstr "الجنس"
+
+#: mwareeth/family_tree_builder.py:481 mwareeth/family_tree_builder.py:539
+msgid "Birth year (optional, press Enter to skip)"
+msgstr "سنة الميلاد (اختياري، اضغط Enter للتخطي)"
+
+#: mwareeth/family_tree_builder.py:483 mwareeth/family_tree_builder.py:541
+msgid "Death year (optional, press Enter to skip)"
+msgstr "سنة الوفاة (اختياري، اضغط Enter للتخطي)"
+
+#: mwareeth/family_tree_builder.py:496
+msgid "Add a person"
+msgstr "إضافة شخص"
+
+#: mwareeth/family_tree_builder.py:497
+msgid "Add a relationship"
+msgstr "إضافة علاقة"
+
+#: mwareeth/family_tree_builder.py:498
+msgid "Visualize the family tree"
+msgstr "عرض شجرة العائلة"
+
+#: mwareeth/family_tree_builder.py:499
+msgid "Finish and build the family tree"
+msgstr "إنهاء وبناء شجرة العائلة"
+
+#: mwareeth/family_tree_builder.py:502
+msgid "What would you like to do?"
+msgstr "ماذا تريد أن تفعل؟"
+
+#: mwareeth/family_tree_builder.py:504 mwareeth/family_tree_builder.py:572
+#: mwareeth/family_tree_builder.py:614
+msgid "Enter your choice"
+msgstr "أدخل اختيارك"
+
+#: mwareeth/family_tree_builder.py:510 mwareeth/family_tree_builder.py:617
+msgid "Invalid choice. Please try again."
+msgstr "اختيار غير صالح. يرجى المحاولة مرة أخرى."
+
+#: mwareeth/family_tree_builder.py:529 mwareeth/family_tree_builder.py:596
+msgid "Please fix these errors and try again."
+msgstr "يرجى إصلاح هذه الأخطاء والمحاولة مرة أخرى."
+
+#: mwareeth/family_tree_builder.py:536
+msgid "Adding a new person"
+msgstr "إضافة شخص جديد"
+
+#: mwareeth/family_tree_builder.py:551
+#, python-brace-format
+msgid "Added {name} to the family tree."
+msgstr "تمت إضافة {name} إلى شجرة العائلة."
+
+#: mwareeth/family_tree_builder.py:557
+msgid "Adding a new relationship"
+msgstr "إضافة علاقة جديدة"
+
+#: mwareeth/family_tree_builder.py:558
+msgid "Available people"
+msgstr "الأشخاص المتاحون"
+
+#: mwareeth/family_tree_builder.py:562
+msgid "Enter the name of the first person"
+msgstr "أدخل اسم الشخص الأول"
+
+#: mwareeth/family_tree_builder.py:567
+msgid "Relationship types"
+msgstr "أنواع العلاقات"
+
+#: mwareeth/family_tree_builder.py:579
+#, python-brace-format
+msgid "Enter the name of the {relation}"
+msgstr "أدخل اسم {relation}"
+
+#: mwareeth/family_tree_builder.py:586
+#, python-brace-format
+msgid "Added {relation} relationship between {person1} and {person2}."
+msgstr "تمت إضافة علاقة {relation} بين {person1} و {person2}."
+
+#: mwareeth/family_tree_builder.py:600
+msgid "Graphviz is not installed. Please install it to visualize the family tree."
+msgstr "Graphviz غير مثبت. يرجى تثبيته لعرض شجرة العائلة."
+
+#: mwareeth/family_tree_builder.py:601
+msgid "You can install it with: pip install graphviz"
+msgstr "يمكنك تثبيته باستخدام: pip install graphviz"
+
+#: mwareeth/family_tree_builder.py:602
+msgid "You may also need to install the Graphviz system package."
+msgstr "قد تحتاج أيضًا إلى تثبيت حزمة Graphviz للنظام."
+
+#: mwareeth/family_tree_builder.py:610
+msgid "Pick language:"
+msgstr "اختر اللغة:"
+
+#: mwareeth/family_tree_builder.py:621
+msgid "Visualizing the family tree:"
+msgstr "عرض شجرة العائلة:"
+
+#: mwareeth/family_tree_builder.py:624
+msgid "Family Tree"
+msgstr "شجرة العائلة"
+
+#: mwareeth/family_tree_builder.py:638
+msgctxt "male"
+msgid "Born"
+msgstr "ولد"
+
+#: mwareeth/family_tree_builder.py:638
+msgctxt "female"
+msgid "Born"
+msgstr "ولدت"
+
+#: mwareeth/family_tree_builder.py:641
+msgctxt "male"
+msgid "Died"
+msgstr "توفي"
+
+#: mwareeth/family_tree_builder.py:641
+msgctxt "female"
+msgid "Died"
+msgstr "توفيت"
+
+#: mwareeth/family_tree_builder.py:663
+msgctxt "male"
+msgid "spouse"
+msgstr "زوج"
+
+#: mwareeth/family_tree_builder.py:663
+msgctxt "female"
+msgid "spouse"
+msgstr "زوجة"
+
+#: mwareeth/family_tree_builder.py:670
+msgid ""
+"Family tree visualization has been generated and should open "
+"automatically."
+msgstr "تم إنشاء عرض شجرة العائلة ويجب أن يفتح تلقائيًا."
+
+#: mwareeth/family_tree_builder.py:673
+msgid "Could not render the graph. Here's the DOT source:"
+msgstr "تعذر عرض الرسم البياني. إليك مصدر DOT:"
+
+#: mwareeth/entities/family_tree.py:424
+msgid "Deceased"
+msgstr "المتوفى"
+
+#: mwareeth/entities/family_tree.py:428
+msgid "Ancestors"
+msgstr "الأسلاف"
+
+#: mwareeth/entities/family_tree.py:444
+msgid "Grandfathers"
+msgstr "الأجداد"
+
+#: mwareeth/entities/family_tree.py:451
+msgid "Grandmothers"
+msgstr "الجدات"
+
+#: mwareeth/entities/family_tree.py:462
+msgid "Siblings"
+msgstr "الإخوة والأخوات"
+
+#: mwareeth/entities/family_tree.py:465
+msgid "Brothers"
+msgstr "الإخوة"
+
+#: mwareeth/entities/family_tree.py:470
+msgid "Sisters"
+msgstr "الأخوات"
+
+#: mwareeth/entities/family_tree.py:482
+msgid "Extended Family"
+msgstr "العائلة الممتدة"
+
+#: mwareeth/entities/family_tree.py:485
+msgid "Uncles"
+msgstr "الأعمام"
+
+#: mwareeth/entities/family_tree.py:490
+msgid "Aunts"
+msgstr "العمات"
+
+#: mwareeth/entities/family_tree.py:495
+msgid "Cousins"
+msgstr "أبناء العم/العمة"
+
+#: mwareeth/entities/family_tree.py:506
+msgid "Descendants"
+msgstr "الأحفاد"
+
+#: mwareeth/entities/family_tree.py:509
+msgid "Sons"
+msgstr "الأبناء"
+
+#: mwareeth/entities/family_tree.py:514 mwareeth/entities/family_tree.py:525
+msgid "Grandchildren"
+msgstr "الأحفاد"
+
+#: mwareeth/entities/family_tree.py:516 mwareeth/entities/family_tree.py:527
+msgid "Son"
+msgstr "ابن"
+
+#: mwareeth/entities/family_tree.py:516 mwareeth/entities/family_tree.py:527
+msgid "Daughter"
+msgstr "ابنة"
+
+#: mwareeth/entities/family_tree.py:520
+msgid "Daughters"
+msgstr "البنات"
+
