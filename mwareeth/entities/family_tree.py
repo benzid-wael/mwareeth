@@ -42,6 +42,8 @@ class RelationshipType(Enum):
     
     # Cousins
     COUSIN = "cousin"  # e.g. Father's brother's child, mother's sister's child
+    COUSIN_SON = "cousin son"  # e.g. Father's brother's son
+    COUSIN_DAUGHTER = "cousin daughter"  # e.g. Father's brother's daughter
     
     # Nephews and nieces
     NEPHEW = "nephew"  # e.g. Brother's son
@@ -50,7 +52,8 @@ class RelationshipType(Enum):
     # Children
     SON = "son"
     DAUGHTER = "daughter"
-    # FIXME(wbenzid): add grandson and granddaughter
+    GRANDSON = "grandson"
+    GRANDDAUGHTER = "granddaughter"
 
 
 # ---- Relationship Mappings ----
@@ -109,18 +112,18 @@ CHILDREN_RELATIONSHIP_MAPPING = {
     
     # Cousin's children remain cousins
     RelationshipType.COUSIN: {
-        Gender.MALE: RelationshipType.COUSIN,
-        Gender.FEMALE: RelationshipType.COUSIN,
+        Gender.MALE: RelationshipType.COUSIN_SON,
+        Gender.FEMALE: RelationshipType.COUSIN_DAUGHTER,
     },
     
     # Children's children remain sons/daughters
     RelationshipType.SON: {
-        Gender.MALE: RelationshipType.SON,
-        Gender.FEMALE: RelationshipType.DAUGHTER,
+        Gender.MALE: RelationshipType.GRANDSON,
+        Gender.FEMALE: RelationshipType.GRANDDAUGHTER,
     },
     RelationshipType.DAUGHTER: {
-        Gender.MALE: RelationshipType.SON,
-        Gender.FEMALE: RelationshipType.DAUGHTER,
+        Gender.MALE: RelationshipType.GRANDSON,
+        Gender.FEMALE: RelationshipType.GRANDDAUGHTER,
     },
 }
 
@@ -259,7 +262,7 @@ class FamilyTree:
             lineage_type=lineage_type
         )
 
-    def _process_children(
+    def _process_non_descendant_children(
         self, person: Person, relationship: Relationship
     ) -> List[Relationship]:
         """
@@ -356,7 +359,7 @@ class FamilyTree:
                     stack.append(mother_relationship)
             
             # Process the person's children (siblings, cousins, etc.)
-            child_relationships = self._process_children(relationship.person, relationship)
+            child_relationships = self._process_non_descendant_children(relationship.person, relationship)
             stack.extend([rel for rel in child_relationships if id(rel.person) not in seen])
 
     def _process_descendants(self) -> None:
@@ -399,14 +402,15 @@ class FamilyTree:
             # Process the person's children
             for grandchild in relationship.person.children:
                 relationship_type = (
-                    RelationshipType.SON if grandchild.gender == Gender.MALE 
-                    else RelationshipType.DAUGHTER
+                    RelationshipType.GRANDSON if grandchild.gender == Gender.MALE 
+                    else RelationshipType.GRANDDAUGHTER
                 )
+                lineage = relationship.lineage + [RelationshipType.SON if relationship.person.gender == Gender.MALE else RelationshipType.DAUGHTER]
                 stack.append(
                     Relationship(
                         person=grandchild,
                         relationship_type=relationship_type,
-                        lineage=[relationship_type],
+                        lineage=lineage,
                         lineage_type=None
                     )
                 )
