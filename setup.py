@@ -1,6 +1,6 @@
 import sys
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from babel.messages import frontend as babel
 
 try:
@@ -17,10 +17,13 @@ setup(
         'init_catalog': babel.init_catalog,
         'update_catalog': babel.update_catalog,
     },
-    packages = ['mwareeth'],
+    packages = find_packages(),
     message_extractors = {
         'mwareeth': [
             ('**.py', 'python', None),
         ],
+    },
+    extras_require={
+        'gui': ['pillow>=10.0.0'],
     },
 )

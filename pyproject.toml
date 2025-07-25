@@ -11,6 +11,14 @@ dependencies = [
     "setuptools>=80.9.0",
 ]
 
+[project.optional-dependencies]
+gui = [
+    "pillow>=10.0.0",  # For advanced image handling in the GUI
+]
+
+[project.scripts]
+mwareeth = "main:main"
+
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
