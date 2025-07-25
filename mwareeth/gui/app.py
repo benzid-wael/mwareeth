@@ -109,6 +109,7 @@ class MwareethGUI:
     
     def setup_menu(self):
         """Set up the application menu."""
+        # Create a new menubar
         menubar = tk.Menu(self.root)
         
         # File menu
@@ -132,6 +133,7 @@ class MwareethGUI:
         help_menu.add_command(label=_("About"), command=self.show_about)
         menubar.add_cascade(label=_("Help"), menu=help_menu)
         
+        # Apply the menubar to the root window
         self.root.config(menu=menubar)
     
     def setup_family_tab(self):
@@ -410,16 +412,126 @@ class MwareethGUI:
     
     def change_language(self, language: str) -> None:
         """
-        Change the application language.
+        Change the application language and update all UI elements.
         
         Args:
             language: The language code to use for translations
         """
         try:
+            # Change the language
             set_language(language)
-            messagebox.showinfo(_("Info"), _("Language changed. Please restart the application for the changes to take effect."))
-        except ValueError:
-            messagebox.showerror(_("Error"), _("Failed to change language"))
+            
+            # Update the builder's language
+            self.builder.language = language
+            
+            # Update all UI elements with the new translations
+            self.update_ui_language()
+            
+            # Show success message
+            messagebox.showinfo(_("Info"), _("Language changed successfully."))
+        except ValueError as e:
+            messagebox.showerror(_("Error"), _("Failed to change language: {error}", error=str(e)))
+    
+    def update_ui_language(self) -> None:
+        """Update all UI elements with the current language translations."""
+        # Update window title
+        self.root.title(_("Mwareeth - Islamic Inheritance Calculator"))
+        
+        # Update status bar
+        self.status_var.set(_("Ready"))
+        
+        # Recreate the menu (this is more reliable than trying to update it)
+        self.setup_menu()
+        
+        # Update notebook tabs
+        self.notebook.tab(0, text=_("Family"))
+        self.notebook.tab(1, text=_("Visualization"))
+        self.notebook.tab(2, text=_("Inheritance"))
+        
+        # Update people tree headings
+        self.people_tree.heading("name", text=_("Name"))
+        self.people_tree.heading("gender", text=_("Gender"))
+        self.people_tree.heading("deceased", text=_("Deceased"))
+        
+        # Update inheritance text placeholder if it exists
+        if hasattr(self, "inheritance_text"):
+            self.inheritance_text.config(state=tk.NORMAL)
+            self.inheritance_text.delete(1.0, tk.END)
+            self.inheritance_text.insert(tk.END, _("Inheritance calculation not yet implemented"))
+            self.inheritance_text.config(state=tk.DISABLED)
+        
+        # Update forms
+        if hasattr(self, "person_form"):
+            self.person_form.update_language()
+        
+        if hasattr(self, "relationship_form"):
+            self.relationship_form.update_language()
+        
+        # Update all widgets starting from the root window
+        # This ensures we catch all widgets, even those not directly in the main frame
+        self.update_widget_text(self.root)
+        
+        # Refresh the people list to update "Yes"/"No" translations
+        self.update_people_list()
+        
+        # Force a geometry update to ensure all widgets are properly laid out
+        self.root.update_idletasks()
+    
+    def update_widget_text(self, widget) -> None:
+        """
+        Recursively update the text of all widgets.
+        
+        Args:
+            widget: The widget to update
+        """
+        try:
+            # Skip if widget is destroyed or not properly initialized
+            if not widget.winfo_exists():
+                return
+                
+            # Update button text (both ttk and tk)
+            if isinstance(widget, (ttk.Button, tk.Button)) and hasattr(widget, "configure"):
+                text = widget.cget("text")
+                if text:
+                    widget.configure(text=_(text))
+            
+            # Update label text (both ttk and tk)
+            elif isinstance(widget, (ttk.Label, tk.Label)) and hasattr(widget, "configure"):
+                text = widget.cget("text")
+                if text and not isinstance(text, tk.StringVar):
+                    widget.configure(text=_(text))
+            
+            # Update LabelFrame text (both ttk and tk)
+            elif isinstance(widget, (ttk.LabelFrame, tk.LabelFrame)) and hasattr(widget, "configure"):
+                text = widget.cget("text")
+                if text:
+                    widget.configure(text=_(text))
+            
+            # Update Radiobutton text (both ttk and tk)
+            elif isinstance(widget, (ttk.Radiobutton, tk.Radiobutton)) and hasattr(widget, "configure"):
+                text = widget.cget("text")
+                if text:
+                    widget.configure(text=_(text))
+            
+            # Update Checkbutton text (both ttk and tk)
+            elif isinstance(widget, (ttk.Checkbutton, tk.Checkbutton)) and hasattr(widget, "configure"):
+                text = widget.cget("text")
+                if text:
+                    widget.configure(text=_(text))
+            
+            # Update Menu items
+            elif isinstance(widget, tk.Menu):
+                # Menu items can't be easily updated, so we recreate the menu in setup_menu()
+                pass
+            
+            # Recursively update children
+            if hasattr(widget, "winfo_children"):
+                for child in widget.winfo_children():
+                    self.update_widget_text(child)
+                    
+        except tk.TclError:
+            # Skip any widgets that cause Tcl errors (might be in the process of being destroyed)
+            pass
     
     def show_about(self) -> None:
         """Show the about dialog."""

@@ -28,6 +28,9 @@ class PersonForm(ttk.Frame):
         self.callback = callback
         self.icons = icons or {}
         
+        # Store widget references for language updates
+        self.widgets = {}
+        
         # Create form fields
         self.create_widgets()
         self.pack(fill=tk.BOTH, expand=True)
@@ -35,39 +38,47 @@ class PersonForm(ttk.Frame):
     def create_widgets(self):
         """Create the form widgets."""
         # Name field
-        ttk.Label(self, text=_("Name:")).grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["name_label"] = ttk.Label(self, text=_("Name:"))
+        self.widgets["name_label"].grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.name_var = tk.StringVar()
         ttk.Entry(self, textvariable=self.name_var).grid(row=0, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Gender field
-        ttk.Label(self, text=_("Gender:")).grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["gender_label"] = ttk.Label(self, text=_("Gender:"))
+        self.widgets["gender_label"].grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.gender_var = tk.StringVar(value="male")
-        ttk.Radiobutton(self, text=_("Male"), variable=self.gender_var, value="male").grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
-        ttk.Radiobutton(self, text=_("Female"), variable=self.gender_var, value="female").grid(row=1, column=2, sticky=tk.W, padx=5, pady=5)
+        self.widgets["male_radio"] = ttk.Radiobutton(self, text=_("Male"), variable=self.gender_var, value="male")
+        self.widgets["male_radio"].grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
+        self.widgets["female_radio"] = ttk.Radiobutton(self, text=_("Female"), variable=self.gender_var, value="female")
+        self.widgets["female_radio"].grid(row=1, column=2, sticky=tk.W, padx=5, pady=5)
         
         # Religion field
-        ttk.Label(self, text=_("Religion:")).grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["religion_label"] = ttk.Label(self, text=_("Religion:"))
+        self.widgets["religion_label"].grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
         self.religion_var = tk.StringVar(value="Islam")
-        religion_combo = ttk.Combobox(self, textvariable=self.religion_var)
-        religion_combo['values'] = [r.value for r in Religion]
-        religion_combo.grid(row=2, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
+        self.widgets["religion_combo"] = ttk.Combobox(self, textvariable=self.religion_var)
+        self.widgets["religion_combo"]['values'] = [r.value for r in Religion]
+        self.widgets["religion_combo"].grid(row=2, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Birth year field
-        ttk.Label(self, text=_("Birth Year:")).grid(row=3, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["birth_year_label"] = ttk.Label(self, text=_("Birth Year:"))
+        self.widgets["birth_year_label"].grid(row=3, column=0, sticky=tk.W, padx=5, pady=5)
         self.birth_year_var = tk.StringVar()
         ttk.Entry(self, textvariable=self.birth_year_var).grid(row=3, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Death year field
-        ttk.Label(self, text=_("Death Year:")).grid(row=4, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["death_year_label"] = ttk.Label(self, text=_("Death Year:"))
+        self.widgets["death_year_label"].grid(row=4, column=0, sticky=tk.W, padx=5, pady=5)
         self.death_year_var = tk.StringVar()
         ttk.Entry(self, textvariable=self.death_year_var).grid(row=4, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Is deceased checkbox
         self.is_deceased_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(self, text=_("Is Deceased"), variable=self.is_deceased_var).grid(row=5, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5)
+        self.widgets["is_deceased_check"] = ttk.Checkbutton(self, text=_("Is Deceased"), variable=self.is_deceased_var)
+        self.widgets["is_deceased_check"].grid(row=5, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5)
         
         # Submit button
-        add_person_button = ttk.Button(
+        self.widgets["add_person_button"] = ttk.Button(
             self, 
             text=_("Add Person"), 
             command=self.submit,
@@ -75,7 +86,7 @@ class PersonForm(ttk.Frame):
             compound=tk.LEFT,
             padding=(5, 2)
         )
-        add_person_button.grid(row=6, column=0, columnspan=2, pady=10)
+        self.widgets["add_person_button"].grid(row=6, column=0, columnspan=2, pady=10)
         
         # Configure grid
         self.columnconfigure(1, weight=1)
@@ -116,6 +127,26 @@ class PersonForm(ttk.Frame):
         self.is_deceased_var.set(False)
 
 
+    def update_language(self):
+        """Update the form widgets with the current language translations."""
+        # Update labels
+        self.widgets["name_label"].configure(text=_("Name:"))
+        self.widgets["gender_label"].configure(text=_("Gender:"))
+        self.widgets["religion_label"].configure(text=_("Religion:"))
+        self.widgets["birth_year_label"].configure(text=_("Birth Year:"))
+        self.widgets["death_year_label"].configure(text=_("Death Year:"))
+        
+        # Update radio buttons
+        self.widgets["male_radio"].configure(text=_("Male"))
+        self.widgets["female_radio"].configure(text=_("Female"))
+        
+        # Update checkbox
+        self.widgets["is_deceased_check"].configure(text=_("Is Deceased"))
+        
+        # Update button
+        self.widgets["add_person_button"].configure(text=_("Add Person"))
+
+
 class RelationshipForm(ttk.Frame):
     """
     A form for adding relationships between people.
@@ -135,6 +166,9 @@ class RelationshipForm(ttk.Frame):
         self.icons = icons or {}
         self.people = []
         
+        # Store widget references for language updates
+        self.widgets = {}
+        
         # Create form fields
         self.create_widgets()
         self.pack(fill=tk.BOTH, expand=True)
@@ -142,26 +176,29 @@ class RelationshipForm(ttk.Frame):
     def create_widgets(self):
         """Create the form widgets."""
         # Person field
-        ttk.Label(self, text=_("Person:")).grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["person_label"] = ttk.Label(self, text=_("Person:"))
+        self.widgets["person_label"].grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.person_var = tk.StringVar()
         self.person_combo = ttk.Combobox(self, textvariable=self.person_var)
         self.person_combo.grid(row=0, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Relationship type field
-        ttk.Label(self, text=_("Relationship:")).grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["relationship_label"] = ttk.Label(self, text=_("Relationship:"))
+        self.widgets["relationship_label"].grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.relation_var = tk.StringVar()
-        relation_combo = ttk.Combobox(self, textvariable=self.relation_var)
-        relation_combo['values'] = [_("father"), _("mother"), _("child"), _("spouse")]
-        relation_combo.grid(row=1, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
+        self.widgets["relation_combo"] = ttk.Combobox(self, textvariable=self.relation_var)
+        self.widgets["relation_combo"]['values'] = [_("father"), _("mother"), _("child"), _("spouse")]
+        self.widgets["relation_combo"].grid(row=1, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Relative field
-        ttk.Label(self, text=_("Relative:")).grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["relative_label"] = ttk.Label(self, text=_("Relative:"))
+        self.widgets["relative_label"].grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
         self.relative_var = tk.StringVar()
         self.relative_combo = ttk.Combobox(self, textvariable=self.relative_var)
         self.relative_combo.grid(row=2, column=1, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # Submit button
-        add_relationship_button = ttk.Button(
+        self.widgets["add_relationship_button"] = ttk.Button(
             self, 
             text=_("Add Relationship"), 
             command=self.submit,
@@ -169,7 +206,7 @@ class RelationshipForm(ttk.Frame):
             compound=tk.LEFT,
             padding=(5, 2)
         )
-        add_relationship_button.grid(row=3, column=0, columnspan=2, pady=10)
+        self.widgets["add_relationship_button"].grid(row=3, column=0, columnspan=2, pady=10)
         
         # Configure grid
         self.columnconfigure(1, weight=1)
@@ -184,6 +221,19 @@ class RelationshipForm(ttk.Frame):
         self.people = people
         self.person_combo['values'] = people
         self.relative_combo['values'] = people
+    
+    def update_language(self):
+        """Update the form widgets with the current language translations."""
+        # Update labels
+        self.widgets["person_label"].configure(text=_("Person:"))
+        self.widgets["relationship_label"].configure(text=_("Relationship:"))
+        self.widgets["relative_label"].configure(text=_("Relative:"))
+        
+        # Update relationship values
+        self.widgets["relation_combo"]['values'] = [_("father"), _("mother"), _("child"), _("spouse")]
+        
+        # Update button
+        self.widgets["add_relationship_button"].configure(text=_("Add Relationship"))
     
     def submit(self):
         """Submit the form."""

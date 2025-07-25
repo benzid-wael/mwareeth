@@ -45,7 +45,7 @@ freeze:
 security: pysa safety
 
 extract-messages:
-	uv run setup.py extract_messages --project mwareeth --input-dirs mwareeth --version 0.0.0  -o locales/mwareeth.pot
+	uv run setup.py extract_messages --project mwareeth --input-dirs mwareeth,examples --version 0.0.0  -o locales/mwareeth.pot
 
 update-messages:
 	uv run setup.py update_catalog -D mwareeth -i locales/mwareeth.pot -d locales/

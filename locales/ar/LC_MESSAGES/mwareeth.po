@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mwareeth 0.0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-25 21:38+0100\n"
+"POT-Creation-Date: 2025-07-26 00:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ar\n"
@@ -39,21 +39,30 @@ msgstr "تم تعيين شخص متوفى بالفعل"
 msgid "Person '{name}' does not exist"
 msgstr "الشخص '{name}' غير موجود"
 
-#: mwareeth/entities/family_tree.py:434 mwareeth/family_tree_builder.py:196
+#: mwareeth/entities/family_tree.py:438 mwareeth/family_tree_builder.py:196
 #: mwareeth/family_tree_builder.py:568 mwareeth/family_tree_builder.py:653
+#: mwareeth/gui/family_tree_view.py:125 mwareeth/gui/family_tree_view.py:137
+#: mwareeth/gui/family_tree_view.py:146 mwareeth/gui/forms.py:190
+#: mwareeth/gui/forms.py:233
 msgid "father"
 msgstr "الأب"
 
-#: mwareeth/entities/family_tree.py:439 mwareeth/family_tree_builder.py:198
+#: mwareeth/entities/family_tree.py:443 mwareeth/family_tree_builder.py:198
 #: mwareeth/family_tree_builder.py:568 mwareeth/family_tree_builder.py:657
+#: mwareeth/gui/family_tree_view.py:130 mwareeth/gui/family_tree_view.py:139
+#: mwareeth/gui/family_tree_view.py:148 mwareeth/gui/forms.py:190
+#: mwareeth/gui/forms.py:233
 msgid "mother"
 msgstr "الأم"
 
 #: mwareeth/family_tree_builder.py:200 mwareeth/family_tree_builder.py:568
+#: mwareeth/gui/forms.py:190 mwareeth/gui/forms.py:233
 msgid "child"
 msgstr "الطفل"
 
 #: mwareeth/family_tree_builder.py:202 mwareeth/family_tree_builder.py:568
+#: mwareeth/gui/family_tree_view.py:166 mwareeth/gui/forms.py:190
+#: mwareeth/gui/forms.py:233
 msgid "spouse"
 msgstr "الزوج/الزوجة"
 
@@ -101,10 +110,12 @@ msgid "Let's start by adding the deceased person (the focal point of the tree)."
 msgstr "لنبدأ بإضافة الشخص المتوفى (نقطة محورية للشجرة)."
 
 #: mwareeth/family_tree_builder.py:479 mwareeth/family_tree_builder.py:537
+#: mwareeth/gui/app.py:183 mwareeth/gui/app.py:452
 msgid "Name"
 msgstr "الاسم"
 
 #: mwareeth/family_tree_builder.py:480 mwareeth/family_tree_builder.py:538
+#: mwareeth/gui/app.py:184 mwareeth/gui/app.py:453
 msgid "Gender"
 msgstr "الجنس"
 
@@ -188,11 +199,11 @@ msgstr "تمت إضافة علاقة {relation} بين {person1} و {person2}."
 msgid "Graphviz is not installed. Please install it to visualize the family tree."
 msgstr "Graphviz غير مثبت. يرجى تثبيته لعرض شجرة العائلة."
 
-#: mwareeth/family_tree_builder.py:601
+#: mwareeth/family_tree_builder.py:601 mwareeth/gui/family_tree_view.py:86
 msgid "You can install it with: pip install graphviz"
 msgstr "يمكنك تثبيته باستخدام: pip install graphviz"
 
-#: mwareeth/family_tree_builder.py:602
+#: mwareeth/family_tree_builder.py:602 mwareeth/gui/family_tree_view.py:88
 msgid "You may also need to install the Graphviz system package."
 msgstr "قد تحتاج أيضًا إلى تثبيت حزمة Graphviz للنظام."
 
@@ -248,71 +259,335 @@ msgstr "تم إنشاء عرض شجرة العائلة ويجب أن يفتح ت
 msgid "Could not render the graph. Here's the DOT source:"
 msgstr "تعذر عرض الرسم البياني. إليك مصدر DOT:"
 
-#: mwareeth/entities/family_tree.py:424
+#: mwareeth/entities/family_tree.py:428 mwareeth/gui/app.py:185
+#: mwareeth/gui/app.py:454
 msgid "Deceased"
 msgstr "المتوفى"
 
-#: mwareeth/entities/family_tree.py:428
+#: mwareeth/entities/family_tree.py:432
 msgid "Ancestors"
 msgstr "الأسلاف"
 
-#: mwareeth/entities/family_tree.py:444
+#: mwareeth/entities/family_tree.py:448
 msgid "Grandfathers"
 msgstr "الأجداد"
 
-#: mwareeth/entities/family_tree.py:451
+#: mwareeth/entities/family_tree.py:455
 msgid "Grandmothers"
 msgstr "الجدات"
 
-#: mwareeth/entities/family_tree.py:462
+#: mwareeth/entities/family_tree.py:466
 msgid "Siblings"
 msgstr "الإخوة والأخوات"
 
-#: mwareeth/entities/family_tree.py:465
+#: mwareeth/entities/family_tree.py:469
 msgid "Brothers"
 msgstr "الإخوة"
 
-#: mwareeth/entities/family_tree.py:470
+#: mwareeth/entities/family_tree.py:474
 msgid "Sisters"
 msgstr "الأخوات"
 
-#: mwareeth/entities/family_tree.py:482
+#: mwareeth/entities/family_tree.py:486
 msgid "Extended Family"
 msgstr "العائلة الممتدة"
 
-#: mwareeth/entities/family_tree.py:485
+#: mwareeth/entities/family_tree.py:489
 msgid "Uncles"
 msgstr "الأعمام"
 
-#: mwareeth/entities/family_tree.py:490
+#: mwareeth/entities/family_tree.py:494
 msgid "Aunts"
 msgstr "العمات"
 
-#: mwareeth/entities/family_tree.py:495
+#: mwareeth/entities/family_tree.py:499
 msgid "Cousins"
 msgstr "أبناء العم/العمة"
 
-#: mwareeth/entities/family_tree.py:506
+#: mwareeth/entities/family_tree.py:510
 msgid "Descendants"
 msgstr "الأحفاد"
 
-#: mwareeth/entities/family_tree.py:509
+#: mwareeth/entities/family_tree.py:513
 msgid "Sons"
 msgstr "الأبناء"
 
-#: mwareeth/entities/family_tree.py:514 mwareeth/entities/family_tree.py:525
+#: mwareeth/entities/family_tree.py:518 mwareeth/entities/family_tree.py:529
 msgid "Grandchildren"
 msgstr "الأحفاد"
 
-#: mwareeth/entities/family_tree.py:516 mwareeth/entities/family_tree.py:527
+#: mwareeth/entities/family_tree.py:520 mwareeth/entities/family_tree.py:531
 msgid "Son"
 msgstr "ابن"
 
-#: mwareeth/entities/family_tree.py:516 mwareeth/entities/family_tree.py:527
+#: mwareeth/entities/family_tree.py:520 mwareeth/entities/family_tree.py:531
 msgid "Daughter"
 msgstr "ابنة"
 
-#: mwareeth/entities/family_tree.py:520
+#: mwareeth/entities/family_tree.py:524
 msgid "Daughters"
 msgstr "البنات"
+
+#: mwareeth/gui/app.py:41 mwareeth/gui/app.py:438
+msgid "Mwareeth - Islamic Inheritance Calculator"
+msgstr "مواريث - حاسبة الميراث الإسلامية"
+
+#: mwareeth/gui/app.py:69 mwareeth/gui/app.py:441
+msgid "Ready"
+msgstr "مستعد"
+
+#: mwareeth/gui/app.py:117
+msgid "New Family Tree"
+msgstr "شجرة العائلة جديدة"
+
+#: mwareeth/gui/app.py:118
+msgid "Open..."
+msgstr "فتح"
+
+#: mwareeth/gui/app.py:119
+msgid "Save"
+msgstr "حفظ"
+
+#: mwareeth/gui/app.py:120
+msgid "Save As..."
+msgstr "حفظ باسم..."
+
+#: mwareeth/gui/app.py:122
+msgid "Exit"
+msgstr "خروج"
+
+#: mwareeth/gui/app.py:123
+msgid "File"
+msgstr "ملف"
+
+#: mwareeth/gui/app.py:127
+msgid "English"
+msgstr "إنجليزي"
+
+#: mwareeth/gui/app.py:128
+msgid "Arabic"
+msgstr "عربي"
+
+#: mwareeth/gui/app.py:129
+msgid "Language"
+msgstr "اختر اللغة"
+
+#: mwareeth/gui/app.py:133 mwareeth/gui/app.py:539
+msgid "About"
+msgstr "حول التطبيق"
+
+#: mwareeth/gui/app.py:134
+msgid "Help"
+msgstr "مساعدة"
+
+#: mwareeth/gui/app.py:142 mwareeth/gui/app.py:447
+msgid "Family"
+msgstr "أسرة"
+
+#: mwareeth/gui/app.py:152 mwareeth/gui/forms.py:83 mwareeth/gui/forms.py:147
+msgid "Add Person"
+msgstr "إضافة شخص"
+
+#: mwareeth/gui/app.py:159 mwareeth/gui/forms.py:203 mwareeth/gui/forms.py:236
+msgid "Add Relationship"
+msgstr "إضافة علاقة"
+
+#: mwareeth/gui/app.py:169
+msgid "People"
+msgstr "الأشخاص"
+
+#: mwareeth/gui/app.py:197
+msgid "Set as Deceased"
+msgstr "تعيين كمتوفى"
+
+#: mwareeth/gui/app.py:208 mwareeth/gui/app.py:448
+msgid "Visualization"
+msgstr "تصوير"
+
+#: mwareeth/gui/app.py:217
+msgid "Refresh"
+msgstr "تحديث"
+
+#: mwareeth/gui/app.py:228 mwareeth/gui/app.py:449
+msgid "Inheritance"
+msgstr "الميراث"
+
+#: mwareeth/gui/app.py:242
+msgid "Calculate Inheritance"
+msgstr "حساب الميراث"
+
+#: mwareeth/gui/app.py:272
+#, fuzzy, python-brace-format
+msgid "Added {name} to the family tree"
+msgstr "تمت إضافة {name} إلى شجرة العائلة."
+
+#: mwareeth/gui/app.py:274 mwareeth/gui/app.py:290 mwareeth/gui/app.py:307
+#: mwareeth/gui/app.py:331 mwareeth/gui/app.py:353 mwareeth/gui/app.py:383
+#: mwareeth/gui/app.py:397 mwareeth/gui/app.py:433
+msgid "Error"
+msgstr "خطأ"
+
+#: mwareeth/gui/app.py:287
+#, fuzzy, python-brace-format
+msgid "Added {relation} relationship between {person1} and {person2}"
+msgstr "تمت إضافة علاقة {relation} بين {person1} و {person2}."
+
+#: mwareeth/gui/app.py:296 mwareeth/gui/app.py:431
+msgid "Info"
+msgstr "معلومات"
+
+#: mwareeth/gui/app.py:296
+msgid "Please select a person first"
+msgstr "الرجاء اختيار شخص أولاً"
+
+#: mwareeth/gui/app.py:305
+#, python-brace-format
+msgid "Set {name} as the deceased"
+msgstr "تعيين {name} كمتوفى"
+
+#: mwareeth/gui/app.py:317
+msgid "Yes"
+msgstr "نعم"
+
+#: mwareeth/gui/app.py:317
+msgid "No"
+msgstr "لا"
+
+#: mwareeth/gui/app.py:329
+msgid "Family tree visualization refreshed"
+msgstr "تم تحديث تصور شجرة الأسرة"
+
+#: mwareeth/gui/app.py:346 mwareeth/gui/app.py:460
+msgid "Inheritance calculation not yet implemented"
+msgstr "لم يتم تنفيذ حساب الميراث بعد!"
+
+#: mwareeth/gui/app.py:351
+msgid "Inheritance calculation completed"
+msgstr "تم الانتهاء من حساب الميراث"
+
+#: mwareeth/gui/app.py:357
+msgid "Confirm"
+msgstr "توكيد"
+
+#: mwareeth/gui/app.py:357
+msgid ""
+"Are you sure you want to create a new family tree? Any unsaved changes "
+"will be lost."
+msgstr ""
+"هل أنت متأكد من رغبتك في إنشاء شجرة عائلة جديدة؟ ستُفقد أي تغييرات غير "
+"محفوظة."
+
+#: mwareeth/gui/app.py:361
+msgid "Created new family tree"
+msgstr "تم إنشاء شجرة عائلة جديدة"
+
+#: mwareeth/gui/app.py:366
+msgid "Open Family Tree"
+msgstr "شجرة العائلة"
+
+#: mwareeth/gui/app.py:367 mwareeth/gui/app.py:404
+msgid "JSON Files"
+msgstr "ملفات JSON"
+
+#: mwareeth/gui/app.py:367 mwareeth/gui/app.py:404
+msgid "All Files"
+msgstr "جميع الملفات"
+
+#: mwareeth/gui/app.py:381
+#, fuzzy, python-brace-format
+msgid "Opened family tree from {file}"
+msgstr "شجرة عائلة غير صالحة: {errors}"
+
+#: mwareeth/gui/app.py:395
+#, fuzzy, python-brace-format
+msgid "Saved family tree to {file}"
+msgstr "شجرة عائلة غير صالحة: {errors}"
+
+#: mwareeth/gui/app.py:402
+#, fuzzy
+msgid "Save Family Tree"
+msgstr "شجرة العائلة"
+
+#: mwareeth/gui/app.py:431
+msgid "Language changed successfully."
+msgstr "تم تغيير اللغة بنجاح."
+
+#: mwareeth/gui/app.py:433
+#, python-brace-format
+msgid "Failed to change language: {error}"
+msgstr "فشل تغيير اللغة: {error}"
+
+#: mwareeth/gui/app.py:540
+msgid ""
+"Mwareeth - Islamic Inheritance Calculator\n"
+"\n"
+"A tool to calculate inheritance according to Islamic law."
+msgstr ""
+"مواريث - حاسبة الميراث الإسلامية\n"
+"\n"
+"أداة لحساب الميراث وفقًا للشريعة الإسلامية"
+
+#: mwareeth/gui/family_tree_view.py:84
+#, fuzzy
+msgid ""
+"Graphviz is not installed. Please install it to visualize the family tree"
+" graphically."
+msgstr "Graphviz غير مثبت. يرجى تثبيته لعرض شجرة العائلة."
+
+#: mwareeth/gui/family_tree_view.py:153
+msgid "son"
+msgstr "ابن"
+
+#: mwareeth/gui/family_tree_view.py:158
+msgid "daughter"
+msgstr "بنت"
+
+#: mwareeth/gui/family_tree_view.py:181
+#, python-brace-format
+msgid "Error generating graphical representation: {error}"
+msgstr "خطأ في إنشاء التمثيل الرسومي: {error}"
+
+#: mwareeth/gui/forms.py:41 mwareeth/gui/forms.py:133
+msgid "Name:"
+msgstr "الاسم"
+
+#: mwareeth/gui/forms.py:47 mwareeth/gui/forms.py:134
+msgid "Gender:"
+msgstr "الجنس"
+
+#: mwareeth/gui/forms.py:50 mwareeth/gui/forms.py:140
+msgid "Male"
+msgstr "ذكر"
+
+#: mwareeth/gui/forms.py:52 mwareeth/gui/forms.py:141
+msgid "Female"
+msgstr "أنثى"
+
+#: mwareeth/gui/forms.py:56 mwareeth/gui/forms.py:135
+msgid "Religion:"
+msgstr "دِيانة:"
+
+#: mwareeth/gui/forms.py:64 mwareeth/gui/forms.py:136
+msgid "Birth Year:"
+msgstr "سنة الميلاد:"
+
+#: mwareeth/gui/forms.py:70 mwareeth/gui/forms.py:137
+msgid "Death Year:"
+msgstr "سنة الوفاة:"
+
+#: mwareeth/gui/forms.py:77 mwareeth/gui/forms.py:144
+msgid "Is Deceased"
+msgstr "هل هو متوفى؟"
+
+#: mwareeth/gui/forms.py:179 mwareeth/gui/forms.py:228
+msgid "Person:"
+msgstr ":شخص"
+
+#: mwareeth/gui/forms.py:186 mwareeth/gui/forms.py:229
+msgid "Relationship:"
+msgstr ":القرابة"
+
+#: mwareeth/gui/forms.py:194 mwareeth/gui/forms.py:230
+msgid "Relative:"
+msgstr "قريب:"
 
