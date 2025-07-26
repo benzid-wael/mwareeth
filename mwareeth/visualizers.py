@@ -10,6 +10,7 @@ from typing import Optional
 from .entities.family_tree import FamilyTree, RelationshipType
 from .entities.person import Gender
 from .i18n import _, pgettext
+from .utils.itertools import partition
 
 GRAPHVIZ_AVAILABLE = importlib.util.find_spec("graphviz") is not None
 
@@ -94,8 +95,10 @@ class FamilyTreeTextVisualizer(FamilyTreeVisualizer):
         lines.append("")
 
         # Add siblings
-        brothers = self.family_tree.get_relatives(RelationshipType.BROTHER)
-        sisters = self.family_tree.get_relatives(RelationshipType.SISTER)
+        brothers, sisters = partition(
+            lambda x: x.is_female, self.family_tree.get_siblings()
+        )
+
         if brothers or sisters:
             lines.append(f"=== {_('Siblings')} ===")
 
@@ -112,8 +115,9 @@ class FamilyTreeTextVisualizer(FamilyTreeVisualizer):
             lines.append("")
 
         # Add extended family
-        uncles = self.family_tree.get_relatives(RelationshipType.UNCLE)
-        aunts = self.family_tree.get_relatives(RelationshipType.AUNT)
+        uncles, aunts = partition(
+            lambda x: x.is_female, self.family_tree.get_uncles_and_aunts()
+        )
         cousins = self.family_tree.get_relatives(RelationshipType.COUSIN)
 
         if uncles or aunts or cousins:

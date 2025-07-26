@@ -4,18 +4,12 @@ Unit tests for the family_tree module.
 
 import unittest
 
-from ..family_tree import FamilyTree, LineageType, Relationship, RelationshipType
+from ..family_tree import FamilyTree, Relationship, RelationshipType
 from ..person import Gender, Person
 
 
 class TestLineageType(unittest.TestCase):
     """Tests for the LineageType enum."""
-
-    def test_lineage_types(self):
-        """Test that LineageType enum has the expected values."""
-        self.assertEqual(LineageType.BOTH.value, 1)
-        self.assertEqual(LineageType.PATERNAL.value, 2)
-        self.assertEqual(LineageType.MATERNAL.value, 3)
 
 
 class TestRelationshipType(unittest.TestCase):
@@ -38,11 +32,9 @@ class TestRelationship(unittest.TestCase):
             Person("Deceased", Gender.MALE),
             RelationshipType.FATHER,
             [RelationshipType.FATHER],
-            None,
         )
         self.assertEqual(relationship.relationship_type, RelationshipType.FATHER)
         self.assertEqual(relationship.lineage, [RelationshipType.FATHER])
-        self.assertIsNone(relationship.lineage_type)
         self.assertEqual(relationship.degree, 1)
 
     def test_father_factory_method(self):
@@ -50,7 +42,6 @@ class TestRelationship(unittest.TestCase):
         relationship = Relationship.father(Person("Ali", Gender.MALE))
         self.assertEqual(relationship.relationship_type, RelationshipType.FATHER)
         self.assertEqual(relationship.lineage, [RelationshipType.FATHER])
-        self.assertIsNone(relationship.lineage_type)
         self.assertEqual(relationship.degree, 1)
 
     def test_mother_factory_method(self):
@@ -58,7 +49,6 @@ class TestRelationship(unittest.TestCase):
         relationship = Relationship.mother(Person("Ali", Gender.FEMALE))
         self.assertEqual(relationship.relationship_type, RelationshipType.MOTHER)
         self.assertEqual(relationship.lineage, [RelationshipType.MOTHER])
-        self.assertIsNone(relationship.lineage_type)
         self.assertEqual(relationship.degree, 1)
 
     def test_is_ancestor_property(self):
@@ -165,10 +155,10 @@ class TestFamilyTree(unittest.TestCase):
         family_tree = FamilyTree(deceased)
 
         # Check that siblings are correctly established
-        self.assertIn(RelationshipType.BROTHER, family_tree._relationships)
-        self.assertIn(brother, family_tree.get_relatives(RelationshipType.BROTHER))
-        self.assertIn(RelationshipType.SISTER, family_tree._relationships)
-        self.assertIn(sister, family_tree.get_relatives(RelationshipType.SISTER))
+        self.assertIn(RelationshipType.BROTHER_FULL, family_tree._relationships)
+        self.assertIn(brother, family_tree.get_relatives(RelationshipType.BROTHER_FULL))
+        self.assertIn(RelationshipType.SISTER_FULL, family_tree._relationships)
+        self.assertIn(sister, family_tree.get_relatives(RelationshipType.SISTER_FULL))
 
     def test_process_ancestors_with_uncles_aunts(self):
         """Test that ancestors, uncles and aunts are correctly processed."""
@@ -187,16 +177,21 @@ class TestFamilyTree(unittest.TestCase):
         uncle.add_father(grandfather)
         uncle.add_mother(grandmother)
         aunt.add_father(grandfather)
-        aunt.add_mother(grandmother)
 
         # Create the family tree
         family_tree = FamilyTree(deceased)
 
         # Check that uncles and aunts are correctly established
-        self.assertIn(RelationshipType.UNCLE, family_tree._relationships)
-        self.assertIn(uncle, family_tree.get_relatives(RelationshipType.UNCLE))
-        self.assertIn(RelationshipType.AUNT, family_tree._relationships)
-        self.assertIn(aunt, family_tree.get_relatives(RelationshipType.AUNT))
+        self.assertIn(RelationshipType.PARENTAL_UNCLE_FULL, family_tree._relationships)
+        self.assertIn(
+            uncle, family_tree.get_relatives(RelationshipType.PARENTAL_UNCLE_FULL)
+        )
+        self.assertIn(
+            RelationshipType.PARENTAL_AUNT_PARENTAL, family_tree._relationships
+        )
+        self.assertIn(
+            aunt, family_tree.get_relatives(RelationshipType.PARENTAL_AUNT_PARENTAL)
+        )
 
     def test_family_tree_with_no_ancestors(self):
         """Test a family tree with a deceased person who has no ancestors."""

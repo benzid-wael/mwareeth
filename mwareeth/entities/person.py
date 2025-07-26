@@ -37,26 +37,9 @@ class Person:
     spouses: Set["Person"] = field(default_factory=set)
     children: Set["Person"] = field(default_factory=set)
 
-    @property
-    def is_alive(self) -> bool:
-        return self.death_year is None
-
-    @property
-    def is_deceased(self) -> bool:
-        return not self.is_alive
-
-    @property
-    def fullname(self) -> str:
-        fullname = self.name.lower()
-        father = self.father
-        while father:
-            fullname = f"{father.name.lower()}>{fullname}"
-            father = father.father
-        return fullname
-
     def add_father(self, father: "Person") -> "Person":
         if self.father and self.father != father:
-            raise ValueError("Cannot replace father!")
+            raise ValueError(f"Cannot replace father for {self.name}!")
         self.father = father
         father.children.add(self)
         return self
@@ -90,6 +73,31 @@ class Person:
                 )
         return self
 
+    @property
+    def fullname(self) -> str:
+        fullname = self.name.lower()
+        father = self.father
+        while father:
+            fullname = f"{father.name.lower()}>{fullname}"
+            father = father.father
+        return fullname
+
+    @property
+    def is_alive(self) -> bool:
+        return self.death_year is None
+
+    @property
+    def is_deceased(self) -> bool:
+        return not self.is_alive
+
+    @property
+    def is_male(self) -> bool:
+        return self.gender == Gender.MALE
+
+    @property
+    def is_female(self) -> bool:
+        return self.gender == Gender.FEMALE
+
     def __post_init__(self):
         """Validate person data."""
         if self.death_year and self.birth_year and self.death_year < self.birth_year:
@@ -99,4 +107,4 @@ class Person:
         return id(self)
 
     def __repr__(self) -> str:
-        return f"{self.name} ({self.gender.name}, {self.religion.name})"
+        return f"<Person: {self.name}>"
