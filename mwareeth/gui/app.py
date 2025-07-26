@@ -37,9 +37,21 @@ class MwareethGUI:
         # Create the main window
         self.root = tk.Tk()
         self.root.title(_("Mwareeth - Islamic Inheritance Calculator"))
-        self.root.geometry("1000x700")
+        
+        # First, let's centralize the GUI
+        # Set window size
+        window_width = 1000
+        window_height = 700
+        # Get screen dimensions
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        # Calculate position coordinates to center the window
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        # Set window size and position
+        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-        # Load icons
+        # Second, Load icons
         self.load_icons()
 
         # Set application icon
