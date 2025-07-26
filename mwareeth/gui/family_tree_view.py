@@ -2,17 +2,16 @@
 This module provides a component for visualizing family trees in the GUI.
 """
 
-import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
-import tempfile
-import platform
-import os
-import shutil
 import importlib.util
+import os
+import platform
+import shutil
+import tempfile
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
 
 from ..family_tree_builder import FamilyTreeBuilder
 from ..i18n import _
-
 
 GRAPHVIZ_AVAILABLE = importlib.util.find_spec("graphviz")
 
@@ -452,9 +451,9 @@ class FamilyTreeView(ttk.Frame):
         """
         # Import visualizers here to avoid circular imports
         from ..visualizers import (
-            FamilyTreeTextVisualizer,
-            FamilyTreeGraphvizVisualizer,
             GRAPHVIZ_AVAILABLE,
+            FamilyTreeGraphvizVisualizer,
+            FamilyTreeTextVisualizer,
         )
 
         # Clear the text widget
@@ -481,7 +480,7 @@ class FamilyTreeView(ttk.Frame):
                         temp_path = temp_file.name
 
                     # Create a graphical visualizer and render the output
-                    graphical_visualizer = FamilyTreeGraphvizVisualizer(tree, builder)
+                    graphical_visualizer = FamilyTreeGraphvizVisualizer(tree)
                     output_path = graphical_visualizer.render(temp_path, view=False)
 
                     # Display the image

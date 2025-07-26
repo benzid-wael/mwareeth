@@ -4,7 +4,7 @@ This module provides form components for the GUI.
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Callable, List, Dict, Any
+from typing import Any, Callable, Dict, List
 
 from ..entities.person import Religion
 from ..i18n import _

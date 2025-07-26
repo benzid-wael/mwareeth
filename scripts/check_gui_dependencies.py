@@ -3,8 +3,8 @@
 Script to check if all the necessary dependencies for the Mwareeth GUI are installed.
 """
 
-import sys
 import importlib.util
+import sys
 
 
 def check_module(module_name, fail_if_missing=False):

@@ -1,7 +1,7 @@
 import sys
 
-from setuptools import setup, find_packages
 from babel.messages import frontend as babel
+from setuptools import find_packages, setup
 
 try:
     pass

@@ -4,7 +4,7 @@ Unit tests for the person module.
 
 import unittest
 
-from ..person import Person, Gender, Religion
+from ..person import Gender, Person, Religion
 
 
 class TestReligion(unittest.TestCase):

@@ -2,10 +2,10 @@
 This module provides visualizers for family trees.
 """
 
-from abc import ABC, abstractmethod
-import tempfile
-from typing import Optional
 import importlib.util
+import tempfile
+from abc import ABC, abstractmethod
+from typing import Optional
 
 from .entities.family_tree import FamilyTree, RelationshipType
 from .entities.person import Gender
@@ -181,7 +181,7 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
     Visualizer that generates a graphical representation of a family tree using Graphviz.
     """
 
-    def __init__(self, family_tree: FamilyTree, builder=None):
+    def __init__(self, family_tree: FamilyTree):
         """
         Initialize the visualizer with a family tree.
 
@@ -190,7 +190,6 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
             builder: The FamilyTreeBuilder instance that contains all people (not just those in the tree)
         """
         super().__init__(family_tree)
-        self.builder = builder
 
     def visualize(self) -> str:
         """
@@ -208,16 +207,8 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
         dot = Digraph(comment=_("Family Tree"), strict=False)
         dot.attr(rankdir="TB", size="8,8")
 
-        # Get all people from the builder if available, otherwise use the people in the tree
-        people = {}
-        if self.builder and hasattr(self.builder, "people"):
-            people = self.builder.people
-        else:
-            # Collect people from the family tree
-            people = {self.family_tree.deceased.name: self.family_tree.deceased}
-            for rel_type in RelationshipType:
-                for person in self.family_tree.get_relatives(rel_type):
-                    people[person.name] = person
+        # Collect people from the family tree
+        people = {person.name: person for person in self.family_tree.get_all_members()}
 
         # Add nodes for each person
         for name, person in people.items():
@@ -311,16 +302,8 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
         dot = Digraph(comment=_("Family Tree"), strict=False)
         dot.attr(rankdir="TB", size="8,8")
 
-        # Get all people from the builder if available, otherwise use the people in the tree
-        people = {}
-        if self.builder and hasattr(self.builder, "people"):
-            people = self.builder.people
-        else:
-            # Collect people from the family tree
-            people = {self.family_tree.deceased.name: self.family_tree.deceased}
-            for rel_type in RelationshipType:
-                for person in self.family_tree.get_relatives(rel_type):
-                    people[person.name] = person
+        # Collect people from the family tree
+        people = {person.name: person for person in self.family_tree.get_all_members()}
 
         # Add nodes for each person
         for name, person in people.items():

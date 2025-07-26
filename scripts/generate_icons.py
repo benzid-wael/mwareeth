@@ -9,10 +9,11 @@ This script creates various icons for the Mwareeth application, including:
 The icons are saved to the mwareeth/gui/assets/icons directory.
 """
 
+import math
 import os
 from pathlib import Path
+
 from PIL import Image, ImageDraw
-import math
 
 # Ensure the script can be run from any directory
 script_dir = Path(os.path.dirname(os.path.abspath(__file__)))

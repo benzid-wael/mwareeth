@@ -2,18 +2,17 @@
 Main GUI application for the mwareeth inheritance calculator.
 """
 
-import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
 import json
 import os
 import platform
 import tempfile
-from typing import Optional
+import tkinter as tk
 from pathlib import Path
+from tkinter import filedialog, messagebox, ttk
+from typing import Optional
 
 from ..family_tree_builder import FamilyTreeBuilder
 from ..i18n import _, set_language
-
 from .forms import PersonForm, RelationshipForm
 
 
@@ -501,7 +500,7 @@ class MwareethGUI:
     def update_graphical_view(self, tree) -> None:
         """Update the graphical view with the given tree."""
         # Import visualizers here to avoid circular imports
-        from ..visualizers import FamilyTreeGraphvizVisualizer, GRAPHVIZ_AVAILABLE
+        from ..visualizers import GRAPHVIZ_AVAILABLE, FamilyTreeGraphvizVisualizer
 
         # Reset the image label
         self.image_label.configure(image="")
@@ -519,7 +518,7 @@ class MwareethGUI:
             # Generate the family tree visualization using the graphical visualizer
             deceased = tree.deceased
             if deceased:
-                graphical_visualizer = FamilyTreeGraphvizVisualizer(tree, self.builder)
+                graphical_visualizer = FamilyTreeGraphvizVisualizer(tree)
                 output_path = graphical_visualizer.render(temp_path, view=False)
 
                 # Display the image

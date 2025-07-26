@@ -3,14 +3,14 @@ This module provides a FamilyTree implementation to represent family relationshi
 and support Islamic inheritance calculations.
 """
 
+import itertools
 from collections import defaultdict
 from dataclasses import dataclass
-from enum import auto, Enum
+from enum import Enum, auto
 from typing import Dict, List, Optional, Set
 
 # Import the translator if available, otherwise use a simple translation function
 from .person import Gender, Person
-
 
 # ---- Enums ----
 
@@ -54,6 +54,9 @@ class RelationshipType(Enum):
     DAUGHTER = "daughter"
     GRANDSON = "grandson"
     GRANDDAUGHTER = "granddaughter"
+
+    HUSBAND = "husband"
+    WIFE = "wife"
 
 
 # ---- Relationship Mappings ----
@@ -220,6 +223,25 @@ class FamilyTree:
         """
         return {rel.person for rel in self._relationships[relationship_type]}
 
+    def get_all_members(self) -> Set[Person]:
+        """
+        Get all members of the family tree.
+
+        Returns:
+            A list of all people in the family tree.
+        """
+        members = {self.deceased}
+        queue = [self.deceased]
+        while queue:
+            person = queue.pop()
+            for relative in itertools.chain(
+                person.children, person.spouses, [person.father, person.mother]
+            ):
+                if relative and relative not in members:
+                    members.add(relative)
+                    queue.append(relative)
+        return members
+
     def _generate_relationships(self) -> None:
         """
         Generate relationships between family members.
@@ -229,6 +251,21 @@ class FamilyTree:
         """
         self._process_descendants()
         self._process_ancestors()
+        # process spouses
+        relationship_type = (
+            RelationshipType.HUSBAND
+            if self.deceased.gender == Gender.FEMALE
+            else RelationshipType.WIFE
+        )
+        for spouse in self.deceased.spouses:
+            self._relationships[relationship_type].add(
+                Relationship(
+                    person=spouse,
+                    relationship_type=relationship_type,
+                    lineage=[relationship_type],
+                    lineage_type=None,
+                )
+            )
 
     def _create_child_relationship(
         self, child: Person, parent_relationship: Relationship

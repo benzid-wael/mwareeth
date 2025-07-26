@@ -3,15 +3,13 @@ This module provides a FamilyTreeBuilder class to help users build a family tree
 from their inputs in an interactive and user-friendly way.
 """
 
+import importlib.util
 from enum import IntEnum, auto
 from typing import Dict, List, Optional, Set, Tuple
-import importlib.util
 
-
-from .i18n import _, set_language, force_language, get_available_languages
-from .entities.person import Gender, Person, Religion
 from .entities.family_tree import FamilyTree
-
+from .entities.person import Gender, Person, Religion
+from .i18n import _, force_language, get_available_languages, set_language
 
 GRAPHVIZ_AVAILABLE = importlib.util.find_spec("graphviz") is not None
 
@@ -662,5 +660,5 @@ class FamilyTreeBuilder:
         tree = self.build()
 
         # Create a graphical visualizer and render the output
-        visualizer = FamilyTreeGraphvizVisualizer(tree, self)
+        visualizer = FamilyTreeGraphvizVisualizer(tree)
         return visualizer.render(path, view)

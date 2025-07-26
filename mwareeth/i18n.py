@@ -6,8 +6,8 @@ using the standard gettext library.
 import contextlib
 import gettext as _gettext
 import os
-from typing import Dict, List
 import warnings
+from typing import Dict, List
 
 # Set up the gettext translation system
 PROJECT_NAME = "mwareeth"

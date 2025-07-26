@@ -1,9 +1,10 @@
 import argparse
-import sys
+import importlib.util
 import os
 import platform
 import subprocess
-import importlib.util
+import sys
+
 from mwareeth.family_tree_builder import FamilyTreeBuilder
 
 

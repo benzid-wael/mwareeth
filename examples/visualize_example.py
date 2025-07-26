@@ -2,14 +2,14 @@
 Example script demonstrating how to visualize a family tree.
 """
 
-import sys
 import os
+import sys
 
 # Add the parent directory to the Python path so we can import from src
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from mwareeth.entities.person import Person, Gender
 from mwareeth.entities.family_tree import FamilyTree
+from mwareeth.entities.person import Gender, Person
 
 
 def create_sample_family():

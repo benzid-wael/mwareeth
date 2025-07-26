@@ -4,14 +4,14 @@ This example demonstrates how to use the gettext-based internationalization (i18
 support in the mwareeth project.
 """
 
-import sys
 import os
+import sys
 
 # Add the parent directory to the path so we can import the mwareeth package
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from mwareeth.i18n import _, set_language, get_available_languages
 from mwareeth.family_tree_builder import FamilyTreeBuilder
+from mwareeth.i18n import _, get_available_languages, set_language
 
 
 def print_separator():
