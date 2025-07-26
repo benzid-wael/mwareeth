@@ -55,11 +55,7 @@ class TestPerson(unittest.TestCase):
 
         # Test with all parameters
         person = Person(
-            name="Full Test",
-            gender=Gender.FEMALE,
-            religion=Religion.CHRISTIANITY,
-            birth_year=1980,
-            death_year=2020
+            name="Full Test", gender=Gender.FEMALE, religion=Religion.CHRISTIANITY, birth_year=1980, death_year=2020
         )
         self.assertEqual(person.name, "Full Test")
         self.assertEqual(person.gender, Gender.FEMALE)
@@ -128,7 +124,7 @@ class TestPerson(unittest.TestCase):
         female = Person("Female", Gender.FEMALE)
         husband1 = Person("Husband1", Gender.MALE)
         husband2 = Person("Husband2", Gender.MALE)
-        
+
         female.add_spouse(husband1)
         with self.assertRaises(ValueError):
             female.add_spouse(husband2)
@@ -137,7 +133,7 @@ class TestPerson(unittest.TestCase):
         male = Person("Male", Gender.MALE)
         wife1 = Person("Wife1", Gender.FEMALE)
         wife2 = Person("Wife2", Gender.FEMALE)
-        
+
         male.add_spouse(wife1)
         male.add_spouse(wife2)
         self.assertEqual(len(male.spouses), 2)
@@ -166,9 +162,7 @@ class TestPerson(unittest.TestCase):
     def test_post_init_validation(self):
         """Test the __post_init__ validation."""
         # Test valid birth and death years
-        valid_person = Person(
-            "Valid", Gender.MALE, birth_year=1980, death_year=2020
-        )
+        valid_person = Person("Valid", Gender.MALE, birth_year=1980, death_year=2020)
         self.assertEqual(valid_person.birth_year, 1980)
         self.assertEqual(valid_person.death_year, 2020)
 

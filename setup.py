@@ -11,19 +11,19 @@ except SyntaxError as exc:
 
 
 setup(
-    cmdclass = {
-        'compile_catalog': babel.compile_catalog,
-        'extract_messages': babel.extract_messages,
-        'init_catalog': babel.init_catalog,
-        'update_catalog': babel.update_catalog,
+    cmdclass={
+        "compile_catalog": babel.compile_catalog,
+        "extract_messages": babel.extract_messages,
+        "init_catalog": babel.init_catalog,
+        "update_catalog": babel.update_catalog,
     },
-    packages = find_packages(),
-    message_extractors = {
-        'mwareeth': [
-            ('**.py', 'python', None),
+    packages=find_packages(),
+    message_extractors={
+        "mwareeth": [
+            ("**.py", "python", None),
         ],
     },
     extras_require={
-        'gui': ['pillow>=10.0.0'],
+        "gui": ["pillow>=10.0.0"],
     },
 )

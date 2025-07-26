@@ -7,8 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "babel>=2.17.0",
     "graphviz>=0.21",
-    "pytest>=8.4.1",
-    "setuptools>=80.9.0",
+    "tk>=0.1.0",
 ]
 
 [project.optional-dependencies]
@@ -22,4 +21,13 @@ mwareeth = "main:main"
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "ruff>=0.12.5",
+    "setuptools>=80.9.0",
 ]

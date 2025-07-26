@@ -15,6 +15,7 @@ from .person import Gender, Person
 
 # ---- Enums ----
 
+
 class LineageType(Enum):
     """Types of lineage for inheritance purposes."""
 
@@ -31,24 +32,24 @@ class RelationshipType(Enum):
     MOTHER = "mother"
     GRANDFATHER = "grandfather"
     GRANDMOTHER = "grandmother"
-    
+
     # Siblings
     BROTHER = "brother"
     SISTER = "sister"
-    
+
     # Extended family
     UNCLE = "uncle"  # e.g. Father's brother
     AUNT = "aunt"  # e.g. Father's sister
-    
+
     # Cousins
     COUSIN = "cousin"  # e.g. Father's brother's child, mother's sister's child
     COUSIN_SON = "cousin son"  # e.g. Father's brother's son
     COUSIN_DAUGHTER = "cousin daughter"  # e.g. Father's brother's daughter
-    
+
     # Nephews and nieces
     NEPHEW = "nephew"  # e.g. Brother's son
     NIECE = "niece"  # e.g. Sister's daughter
-    
+
     # Children
     SON = "son"
     DAUGHTER = "daughter"
@@ -69,7 +70,6 @@ CHILDREN_RELATIONSHIP_MAPPING = {
         Gender.MALE: RelationshipType.BROTHER,
         Gender.FEMALE: RelationshipType.SISTER,
     },
-    
     # Grandparent's children become uncles/aunts
     RelationshipType.GRANDFATHER: {
         Gender.MALE: RelationshipType.UNCLE,
@@ -79,7 +79,6 @@ CHILDREN_RELATIONSHIP_MAPPING = {
         Gender.MALE: RelationshipType.UNCLE,
         Gender.FEMALE: RelationshipType.AUNT,
     },
-    
     # Sibling's children become nephews/nieces
     RelationshipType.BROTHER: {
         Gender.MALE: RelationshipType.NEPHEW,
@@ -89,7 +88,6 @@ CHILDREN_RELATIONSHIP_MAPPING = {
         Gender.MALE: RelationshipType.NEPHEW,
         Gender.FEMALE: RelationshipType.NIECE,
     },
-    
     # Uncle/Aunt's children become cousins
     RelationshipType.UNCLE: {
         Gender.MALE: RelationshipType.COUSIN,
@@ -99,7 +97,6 @@ CHILDREN_RELATIONSHIP_MAPPING = {
         Gender.MALE: RelationshipType.COUSIN,
         Gender.FEMALE: RelationshipType.COUSIN,
     },
-    
     # Nephew/Niece's children remain nephews/nieces
     RelationshipType.NEPHEW: {
         Gender.MALE: RelationshipType.NEPHEW,
@@ -109,13 +106,11 @@ CHILDREN_RELATIONSHIP_MAPPING = {
         Gender.MALE: RelationshipType.NEPHEW,
         Gender.FEMALE: RelationshipType.NIECE,
     },
-    
     # Cousin's children remain cousins
     RelationshipType.COUSIN: {
         Gender.MALE: RelationshipType.COUSIN_SON,
         Gender.FEMALE: RelationshipType.COUSIN_DAUGHTER,
     },
-    
     # Children's children remain sons/daughters
     RelationshipType.SON: {
         Gender.MALE: RelationshipType.GRANDSON,
@@ -135,12 +130,19 @@ ANCESTOR_RELATIONSHIPS = {
     RelationshipType.GRANDMOTHER,
 }
 
+DESCENDANT_RELATIONSHIPS = {
+    RelationshipType.SON,
+    RelationshipType.DAUGHTER,
+    RelationshipType.GRANDSON,
+    RelationshipType.GRANDDAUGHTER,
+}
+
 
 @dataclass(frozen=True)
 class Relationship:
     """
     Represents a relationship between two people.
-    
+
     Attributes:
         person: The person in the relationship
         relationship_type: The type of relationship (father, mother, etc.)
@@ -172,6 +174,11 @@ class Relationship:
     def is_ancestor(self) -> bool:
         """Check if the relationship is an ancestor (father, mother, grandfather, grandmother)."""
         return self.relationship_type in ANCESTOR_RELATIONSHIPS
+
+    @property
+    def is_descendant(self) -> bool:
+        """Check if the relationship is a descendant (son, daughter, etc.)."""
+        return self.relationship_type in DESCENDANT_RELATIONSHIPS
 
     def __hash__(self) -> int:
         """Generate a hash based on the lineage path."""
@@ -222,65 +229,56 @@ class FamilyTree:
         self._process_descendants()
         self._process_ancestors()
 
-    def _create_child_relationship(
-        self, child: Person, parent_relationship: Relationship
-    ) -> Relationship:
+    def _create_child_relationship(self, child: Person, parent_relationship: Relationship) -> Relationship:
         """
         Create a relationship for a child based on the parent's relationship.
-        
+
         Args:
             child: The child person
             parent_relationship: The relationship of the parent
-            
+
         Returns:
             A new relationship object for the child
         """
         # Determine the relationship type based on the parent's relationship and child's gender
         relationship_type = CHILDREN_RELATIONSHIP_MAPPING[parent_relationship.relationship_type][child.gender]
-        
+
         # Determine the lineage type (which side of the family)
         lineage_type = parent_relationship.lineage_type
-        
+
         # For direct children of the deceased, determine the lineage type
         if not lineage_type and parent_relationship.is_ancestor:
             lineage_type = (
-                LineageType.PATERNAL 
+                LineageType.PATERNAL
                 if parent_relationship.relationship_type == RelationshipType.FATHER
                 else LineageType.MATERNAL
             )
-        
+
         # Create the child's lineage by extending the parent's lineage
-        child_lineage_type = (
-            RelationshipType.SON if child.gender == Gender.MALE else RelationshipType.DAUGHTER
-        )
+        child_lineage_type = RelationshipType.SON if child.gender == Gender.MALE else RelationshipType.DAUGHTER
         lineage = parent_relationship.lineage + [child_lineage_type]
-        
+
         return Relationship(
-            person=child,
-            relationship_type=relationship_type,
-            lineage=lineage,
-            lineage_type=lineage_type
+            person=child, relationship_type=relationship_type, lineage=lineage, lineage_type=lineage_type
         )
 
-    def _process_non_descendant_children(
-        self, person: Person, relationship: Relationship
-    ) -> List[Relationship]:
+    def _process_non_descendant_children(self, person: Person, relationship: Relationship) -> List[Relationship]:
         """
         Process the children of a person and create relationships for them.
-        
+
         Args:
             person: The person whose children to process
             relationship: The relationship of the person to the deceased
-            
+
         Returns:
             A list of relationships for the children
         """
         child_relationships = []
-        
+
         for child in person.children:
             child_relationship = self._create_child_relationship(child, relationship)
             child_relationships.append(child_relationship)
-            
+
         return child_relationships
 
     def _create_parent_relationship(
@@ -288,35 +286,33 @@ class FamilyTree:
     ) -> Relationship:
         """
         Create a relationship for a parent based on the child's relationship.
-        
+
         Args:
             parent: The parent person
             child_relationship: The relationship of the child
             is_father: Whether the parent is a father (True) or mother (False)
-            
+
         Returns:
             A new relationship object for the parent
         """
         # Determine the relationship type (grandfather or grandmother)
-        relationship_type = (
-            RelationshipType.GRANDFATHER if is_father else RelationshipType.GRANDMOTHER
-        )
-        
+        relationship_type = RelationshipType.GRANDFATHER if is_father else RelationshipType.GRANDMOTHER
+
         # Create the parent's lineage by extending the child's lineage
         parent_lineage_type = RelationshipType.FATHER if is_father else RelationshipType.MOTHER
         lineage = child_relationship.lineage + [parent_lineage_type]
-        
+
         return Relationship(
             person=parent,
             relationship_type=relationship_type,
             lineage=lineage,
-            lineage_type=child_relationship.lineage_type
+            lineage_type=child_relationship.lineage_type,
         )
 
     def _process_ancestors(self) -> None:
         """
         Process the ancestors of the deceased person and add them to the family tree.
-        
+
         This method traverses the family tree upward from the deceased person,
         adding parents, grandparents, and their descendants (siblings, uncles, etc.).
         """
@@ -326,14 +322,14 @@ class FamilyTree:
             stack.append(Relationship.father(self.deceased.father))
         if self.deceased.mother:
             stack.append(Relationship.mother(self.deceased.mother))
-        
+
         # Keep track of processed people to avoid cycles
         seen = {id(self.deceased)}
-        
+
         # Process the stack
         while stack:
             relationship = stack.pop()
-            
+
             # Skip if already processed
             if id(relationship.person) in seen:
                 continue
@@ -341,7 +337,7 @@ class FamilyTree:
             # Add current relationship to the family tree
             self._relationships[relationship.relationship_type].add(relationship)
             seen.add(id(relationship.person))
-            
+
             # Process the person's parents (if they're an ancestor)
             if relationship.is_ancestor:
                 # Add father if available
@@ -350,14 +346,14 @@ class FamilyTree:
                         relationship.person.father, relationship, True
                     )
                     stack.append(father_relationship)
-                
+
                 # Add mother if available
                 if relationship.person.mother:
                     mother_relationship = self._create_parent_relationship(
                         relationship.person.mother, relationship, False
                     )
                     stack.append(mother_relationship)
-            
+
             # Process the person's children (siblings, cousins, etc.)
             child_relationships = self._process_non_descendant_children(relationship.person, relationship)
             stack.extend([rel for rel in child_relationships if id(rel.person) not in seen])
@@ -365,29 +361,23 @@ class FamilyTree:
     def _process_descendants(self) -> None:
         """
         Process the descendants of the deceased person and add them to the family tree.
-        
+
         This method traverses the family tree downward from the deceased person,
         adding children, grandchildren, etc.
         """
         # Start with the children of the deceased
         stack = []
         for child in self.deceased.children:
-            relationship_type = (
-                RelationshipType.SON if child.gender == Gender.MALE 
-                else RelationshipType.DAUGHTER
-            )
+            relationship_type = RelationshipType.SON if child.gender == Gender.MALE else RelationshipType.DAUGHTER
             stack.append(
                 Relationship(
-                    person=child,
-                    relationship_type=relationship_type,
-                    lineage=[relationship_type],
-                    lineage_type=None
+                    person=child, relationship_type=relationship_type, lineage=[relationship_type], lineage_type=None
                 )
             )
-        
+
         # Keep track of processed people to avoid cycles
         seen = set()
-        
+
         # Process the stack
         while stack:
             relationship = stack.pop()
@@ -398,20 +388,18 @@ class FamilyTree:
             # Add current relationship to the family tree
             self._relationships[relationship.relationship_type].add(relationship)
             seen.add(id(relationship.person))
-            
+
             # Process the person's children
             for grandchild in relationship.person.children:
                 relationship_type = (
-                    RelationshipType.GRANDSON if grandchild.gender == Gender.MALE 
-                    else RelationshipType.GRANDDAUGHTER
+                    RelationshipType.GRANDSON if grandchild.gender == Gender.MALE else RelationshipType.GRANDDAUGHTER
                 )
-                lineage = relationship.lineage + [RelationshipType.SON if relationship.person.gender == Gender.MALE else RelationshipType.DAUGHTER]
+                lineage = relationship.lineage + [
+                    RelationshipType.SON if relationship.person.gender == Gender.MALE else RelationshipType.DAUGHTER
+                ]
                 stack.append(
                     Relationship(
-                        person=grandchild,
-                        relationship_type=relationship_type,
-                        lineage=lineage,
-                        lineage_type=None
+                        person=grandchild, relationship_type=relationship_type, lineage=lineage, lineage_type=None
                     )
                 )
 
@@ -422,113 +410,9 @@ class FamilyTree:
         Returns:
             A string representation of the family tree, where each line represents a relationship.
         """
-        lines = []
-        
-        # Add the deceased person as the root
-        lines.append(f"{_('Deceased')}: {self.deceased.name} ({self.deceased.gender.value})")
-        lines.append("")
-        
-        # Add ancestors
-        lines.append(f"=== {_('Ancestors')} ===")
-        
-        # Parents
-        father = self.get_relatives(RelationshipType.FATHER)
-        if father:
-            father_person = list(father)[0]
-            lines.append(f"{_('father').capitalize()}: {father_person.name}")
-        
-        mother = self.get_relatives(RelationshipType.MOTHER)
-        if mother:
-            mother_person = list(mother)[0]
-            lines.append(f"{_('mother').capitalize()}: {mother_person.name}")
-        
-        # Grandparents
-        grandfathers = self.get_relatives(RelationshipType.GRANDFATHER)
-        if grandfathers:
-            lines.append(f"{_('Grandfathers')}:")
-            for grandfather in grandfathers:
-                # Determine if paternal or maternal
-                lines.append(f"  - {grandfather.name}")
-        
-        grandmothers = self.get_relatives(RelationshipType.GRANDMOTHER)
-        if grandmothers:
-            lines.append(f"{_('Grandmothers')}:")
-            for grandmother in grandmothers:
-                # Determine if paternal or maternal
-                lines.append(f"  - {grandmother.name}")
-        
-        lines.append("")
-        
-        # Add siblings
-        brothers = self.get_relatives(RelationshipType.BROTHER)
-        sisters = self.get_relatives(RelationshipType.SISTER)
-        if brothers or sisters:
-            lines.append(f"=== {_('Siblings')} ===")
-            
-            if brothers:
-                lines.append(f"{_('Brothers')}:")
-                for brother in brothers:
-                    lines.append(f"  - {brother.name}")
-            
-            if sisters:
-                lines.append(f"{_('Sisters')}:")
-                for sister in sisters:
-                    lines.append(f"  - {sister.name}")
-            
-            lines.append("")
-        
-        # Add extended family
-        uncles = self.get_relatives(RelationshipType.UNCLE)
-        aunts = self.get_relatives(RelationshipType.AUNT)
-        cousins = self.get_relatives(RelationshipType.COUSIN)
-        
-        if uncles or aunts or cousins:
-            lines.append(f"=== {_('Extended Family')} ===")
-            
-            if uncles:
-                lines.append(f"{_('Uncles')}:")
-                for uncle in uncles:
-                    lines.append(f"  - {uncle.name}")
-            
-            if aunts:
-                lines.append(f"{_('Aunts')}:")
-                for aunt in aunts:
-                    lines.append(f"  - {aunt.name}")
-            
-            if cousins:
-                lines.append(f"{_('Cousins')}:")
-                for cousin in cousins:
-                    lines.append(f"  - {cousin.name} ({cousin.gender.value})")
-            
-            lines.append("")
-        
-        # Add descendants
-        sons = self.get_relatives(RelationshipType.SON)
-        daughters = self.get_relatives(RelationshipType.DAUGHTER)
-        
-        if sons or daughters:
-            lines.append(f"=== {_('Descendants')} ===")
-            
-            if sons:
-                lines.append(f"{_('Sons')}:")
-                for son in sons:
-                    lines.append(f"  - {son.name}")
-                    # Add grandchildren
-                    if son.children:
-                        lines.append(f"    {_('Grandchildren')}:")
-                        for grandchild in son.children:
-                            gender = _("Son") if grandchild.gender == Gender.MALE else _("Daughter")
-                            lines.append(f"      - {grandchild.name} ({gender})")
-            
-            if daughters:
-                lines.append(f"{_('Daughters')}:")
-                for daughter in daughters:
-                    lines.append(f"  - {daughter.name}")
-                    # Add grandchildren
-                    if daughter.children:
-                        lines.append(f"    {_('Grandchildren')}:")
-                        for grandchild in daughter.children:
-                            gender = _("Son") if grandchild.gender == Gender.MALE else _("Daughter")
-                            lines.append(f"      - {grandchild.name} ({gender})")
-        
-        return "\n".join(lines)
+        # Import here to avoid circular imports
+        from ..visualizers import FamilyTreeTextVisualizer
+
+        # Create a text visualizer and return its output
+        visualizer = FamilyTreeTextVisualizer(self)
+        return visualizer.visualize()

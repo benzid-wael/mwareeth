@@ -11,36 +11,39 @@ from .i18n import _, set_language, force_language, get_available_languages, pget
 # Try to import Graphviz, but don't fail if it's not installed
 try:
     from graphviz import Digraph
+
     GRAPHVIZ_AVAILABLE = True
 except ImportError:
     GRAPHVIZ_AVAILABLE = False
+
     # Define a dummy Digraph class to avoid "possibly unbound" errors
     class Digraph:
         """Dummy Digraph class when graphviz is not available."""
-        def __init__(self, comment='', strict=False):
+
+        def __init__(self, comment="", strict=False):
             self.comment = comment
             self.strict = strict
             self.source = "Graphviz not available"
-        
+
         def attr(self, *args, **kwargs):
             """Dummy attr method."""
             pass
-        
+
         def node(self, *args, **kwargs):
             """Dummy node method."""
             pass
-        
+
         def edge(self, *args, **kwargs):
             """Dummy edge method."""
             pass
-        
+
         def render(self, *args, **kwargs):
             """Dummy render method."""
             raise ImportError("Graphviz is not installed")
 
+
 from .entities.person import Gender, Person, Religion
 from .entities.family_tree import FamilyTree
-
 
 
 class InteractiveBuildCommand(IntEnum):
@@ -53,7 +56,7 @@ class InteractiveBuildCommand(IntEnum):
 class FamilyTreeBuilder:
     """
     A builder class to help construct a family tree from user inputs.
-    
+
     This class provides methods to:
     1. Add people to the family tree
     2. Establish relationships between people
@@ -64,18 +67,18 @@ class FamilyTreeBuilder:
     def __init__(self, language: str = "en"):
         """
         Initialize an empty family tree builder.
-        
+
         Args:
             language: The language code to use for translations (default: "en")
         """
         self.people: Dict[str, Person] = {}
         self.deceased: Optional[Person] = None
         self._set_language(language)
-    
+
     def _set_language(self, language: str) -> None:
         """
         Set the language for the family tree builder.
-        
+
         Args:
             language: The language code to use for translations
         """
@@ -96,7 +99,7 @@ class FamilyTreeBuilder:
     ) -> Person:
         """
         Add a person to the family tree.
-        
+
         Args:
             name: The name of the person
             gender: The gender of the person ("male" or "female")
@@ -104,28 +107,28 @@ class FamilyTreeBuilder:
             birth_year: The birth year of the person (optional)
             death_year: The death year of the person (optional)
             is_deceased: Whether this person is the deceased (focal point of the tree)
-            
+
         Returns:
             The created Person object
-            
+
         Raises:
             ValueError: If a person with the same name already exists or if invalid data is provided
         """
         if name in self.people:
             raise ValueError(_("A person with the name '{name}' already exists", name=name))
-        
+
         # Convert gender string to Gender enum
         try:
             gender_enum = Gender[gender.upper()]
         except KeyError:
             raise ValueError(_("Invalid gender: {gender}. Must be 'male' or 'female'", gender=gender))
-        
+
         # Convert religion string to Religion enum
         try:
             religion_enum = Religion[religion.upper()]
         except KeyError:
             religion_enum = Religion.OTHER
-        
+
         # Create the person
         person = Person(
             name=name,
@@ -134,51 +137,49 @@ class FamilyTreeBuilder:
             birth_year=birth_year,
             death_year=death_year,
         )
-        
+
         # Add the person to the dictionary
         self.people[name] = person
-        
+
         # Set as deceased if specified
         if is_deceased:
             if self.deceased:
                 raise ValueError(_("A deceased person is already set"))
             self.deceased = person
-        
+
         return person
 
     def set_deceased(self, name: str) -> Person:
         """
         Set a person as the deceased (focal point of the tree).
-        
+
         Args:
             name: The name of the person to set as deceased
-            
+
         Returns:
             The Person object set as deceased
-            
+
         Raises:
             ValueError: If the person does not exist
         """
         if name not in self.people:
             raise ValueError(_("Person '{name}' does not exist", name=name))
-        
+
         self.deceased = self.people[name]
         return self.deceased
 
-    def add_relationship(
-        self, person_name: str, relation_type: str, relative_name: str
-    ) -> Tuple[Person, Person]:
+    def add_relationship(self, person_name: str, relation_type: str, relative_name: str) -> Tuple[Person, Person]:
         """
         Add a relationship between two people.
-        
+
         Args:
             person_name: The name of the first person
             relation_type: The type of relationship ("father", "mother", "child", "spouse")
             relative_name: The name of the relative
-            
+
         Returns:
             A tuple of (person, relative) Person objects
-            
+
         Raises:
             ValueError: If either person does not exist or if the relationship is invalid
         """
@@ -187,10 +188,10 @@ class FamilyTreeBuilder:
             raise ValueError(_("Person '{name}' does not exist", name=person_name))
         if relative_name not in self.people:
             raise ValueError(_("Person '{name}' does not exist", name=relative_name))
-        
+
         person = self.people[person_name]
         relative = self.people[relative_name]
-        
+
         # Add the relationship based on the type
         if relation_type.lower() == _("father"):
             person.add_father(relative)
@@ -203,17 +204,17 @@ class FamilyTreeBuilder:
             relative.add_spouse(person)
         else:
             raise ValueError(_("Invalid relationship type: {relation}", relation=relation_type))
-        
+
         return person, relative
 
     def add_father(self, child_name: str, father_name: str) -> Tuple[Person, Person]:
         """
         Add a father-child relationship.
-        
+
         Args:
             child_name: The name of the child
             father_name: The name of the father
-            
+
         Returns:
             A tuple of (child, father) Person objects
         """
@@ -222,11 +223,11 @@ class FamilyTreeBuilder:
     def add_mother(self, child_name: str, mother_name: str) -> Tuple[Person, Person]:
         """
         Add a mother-child relationship.
-        
+
         Args:
             child_name: The name of the child
             mother_name: The name of the mother
-            
+
         Returns:
             A tuple of (child, mother) Person objects
         """
@@ -235,11 +236,11 @@ class FamilyTreeBuilder:
     def add_child(self, parent_name: str, child_name: str) -> Tuple[Person, Person]:
         """
         Add a parent-child relationship.
-        
+
         Args:
             parent_name: The name of the parent
             child_name: The name of the child
-            
+
         Returns:
             A tuple of (parent, child) Person objects
         """
@@ -248,11 +249,11 @@ class FamilyTreeBuilder:
     def add_spouse(self, person_name: str, spouse_name: str) -> Tuple[Person, Person]:
         """
         Add a spousal relationship.
-        
+
         Args:
             person_name: The name of the first person
             spouse_name: The name of the spouse
-            
+
         Returns:
             A tuple of (person, spouse) Person objects
         """
@@ -261,16 +262,16 @@ class FamilyTreeBuilder:
     def validate(self) -> List[str]:
         """
         Validate the family tree structure.
-        
+
         Returns:
             A list of validation errors, or an empty list if the tree is valid
         """
         errors = []
-        
+
         # Check if a deceased person is set
         if not self.deceased:
             errors.append(_("No deceased person is set"))
-        
+
         # Check for circular references
         visited = set()
         for person in self.people.values():
@@ -279,62 +280,66 @@ class FamilyTreeBuilder:
                 errors.append(_("Circular reference detected involving {name}", name=person.name))
                 errors.append(f"  - Visited: {', '.join(p.name for p in visited)}")
                 errors.append(f"  - Path: {', '.join(p.name for p in path)}")
-        
+
         # Check for inconsistent relationships
         for name, person in self.people.items():
             # Check father-child consistency
             if person.father and person not in person.father.children:
                 errors.append(_("Inconsistent father-child relationship for {name}", name=name))
-            
+
             # Check mother-child consistency
             if person.mother and person not in person.mother.children:
                 errors.append(_("Inconsistent mother-child relationship for {name}", name=name))
-            
+
             # Check spouse consistency
             for spouse in person.spouses:
                 if person not in spouse.spouses:
-                    errors.append(_("Inconsistent spousal relationship between {name1} and {name2}", name1=name, name2=spouse.name))
-        
+                    errors.append(
+                        _(
+                            "Inconsistent spousal relationship between {name1} and {name2}",
+                            name1=name,
+                            name2=spouse.name,
+                        )
+                    )
+
         return errors
 
-    def _has_circular_reference(
-        self, person: Person, visited: Set[Person], path: Set[Person]
-    ) -> bool:
+    def _has_circular_reference(self, person: Person, visited: Set[Person], path: Set[Person]) -> bool:
         """
         Check if there's a circular reference in the family tree.
-        
+
         Args:
             person: The person to check
             visited: Set of already visited person IDs
             path: Set of person IDs in the current path
-            
+
         Returns:
             True if a circular reference is detected, False otherwise
         """
         person_id = person
-        
+
         # If we've seen this person in the current path, there's a cycle
         if person_id in path:
             return True
-        
+
         # If we've already checked this person and found no cycles, skip
         if person_id in visited:
             return False
-        
+
         # # Check parents
         # if person.father and self._has_circular_reference(person.father, visited, path):
         #     return True
         # if person.mother and self._has_circular_reference(person.mother, visited, path):
         #     return True
-        
+
         # Add the person to the current path
         path.add(person_id)
-        
+
         # Check children
         for child in person.children:
             if self._has_circular_reference(child, visited, path):
                 return True
-        
+
         # No cycles found, remove from path and mark as visited
         path.remove(person_id)
         visited.add(person_id)
@@ -343,35 +348,35 @@ class FamilyTreeBuilder:
     def build(self) -> FamilyTree:
         """
         Build and return a FamilyTree instance.
-        
+
         Returns:
             A FamilyTree instance
-            
+
         Raises:
             ValueError: If the family tree is invalid
         """
         # Validate the tree first
         errors = self.validate()
         if errors:
-            raise ValueError(_("Invalid family tree: {errors}", errors=', '.join(errors)))
-        
+            raise ValueError(_("Invalid family tree: {errors}", errors=", ".join(errors)))
+
         # Check if deceased is set
         if not self.deceased:
             raise ValueError(_("No deceased person is set"))
-        
+
         # Create and return the family tree
         return FamilyTree(self.deceased)
 
     def from_dict(self, data: Dict) -> "FamilyTreeBuilder":
         """
         Build a family tree from a dictionary representation.
-        
+
         Args:
             data: A dictionary containing the family tree data
-            
+
         Returns:
             The FamilyTreeBuilder instance
-            
+
         Example:
             data = {
                 "deceased": "John",
@@ -396,7 +401,7 @@ class FamilyTreeBuilder:
                 death_year=person_data.get("death_year"),
                 is_deceased=person_data["name"] == data.get("deceased"),
             )
-        
+
         # Add relationships
         for rel_data in data.get("relationships", []):
             self.add_relationship(
@@ -404,13 +409,13 @@ class FamilyTreeBuilder:
                 relation_type=rel_data["relation"],
                 relative_name=rel_data["relative"],
             )
-        
+
         return self
 
     def to_dict(self) -> Dict:
         """
         Convert the family tree to a dictionary representation.
-        
+
         Returns:
             A dictionary containing the family tree data
         """
@@ -419,7 +424,7 @@ class FamilyTreeBuilder:
             "people": [],
             "relationships": [],
         }
-        
+
         # Add people
         for name, person in self.people.items():
             person_data = {
@@ -431,49 +436,55 @@ class FamilyTreeBuilder:
                 person_data["birth_year"] = str(person.birth_year)
             if person.death_year:
                 person_data["death_year"] = str(person.death_year)
-            
+
             result["people"].append(person_data)
-        
+
         # Add relationships
         for name, person in self.people.items():
             # Add father relationship
             if person.father:
-                result["relationships"].append({
-                    "person": name,
-                    "relation": "father",
-                    "relative": person.father.name,
-                })
-            
+                result["relationships"].append(
+                    {
+                        "person": name,
+                        "relation": "father",
+                        "relative": person.father.name,
+                    }
+                )
+
             # Add mother relationship
             if person.mother:
-                result["relationships"].append({
-                    "person": name,
-                    "relation": "mother",
-                    "relative": person.mother.name,
-                })
-            
+                result["relationships"].append(
+                    {
+                        "person": name,
+                        "relation": "mother",
+                        "relative": person.mother.name,
+                    }
+                )
+
             # Add spouse relationships
             for spouse in person.spouses:
                 # Only add the relationship once (from the person with the lexicographically smaller name)
                 if name < spouse.name:
-                    result["relationships"].append({
-                        "person": name,
-                        "relation": "spouse",
-                        "relative": spouse.name,
-                    })
-        
+                    result["relationships"].append(
+                        {
+                            "person": name,
+                            "relation": "spouse",
+                            "relative": spouse.name,
+                        }
+                    )
+
         return result
 
     def interactive_build(self) -> FamilyTree:
         """
         Build a family tree interactively by prompting the user for inputs.
-        
+
         Returns:
             A FamilyTree instance
         """
         print(_("Welcome to the Family Tree Builder!"))
         print(_("Let's start by adding the deceased person (the focal point of the tree)."))
-        
+
         # Add the deceased person
         name = input(f"{_('Name')}: ")
         gender = input(f"{_('Gender')} (male/female): ")
@@ -481,7 +492,7 @@ class FamilyTreeBuilder:
         birth_year = int(birth_year_str) if birth_year_str else None
         death_year_str = input(f"{_('Death year (optional, press Enter to skip)')}: ")
         death_year = int(death_year_str) if death_year_str else None
-        
+
         self.add_person(
             name=name,
             gender=gender,
@@ -489,19 +500,21 @@ class FamilyTreeBuilder:
             death_year=death_year,
             is_deceased=True,
         )
-        
+
         # Add more people and relationships
-        commands = sorted([
-            (InteractiveBuildCommand.ADD_PERSON, _("Add a person")),
-            (InteractiveBuildCommand.ADD_RELATIONSHIP, _("Add a relationship")),
-            (InteractiveBuildCommand.VISUALIZE, _("Visualize the family tree")),
-            (InteractiveBuildCommand.BUILD_FAMILY_TREE, _("Finish and build the family tree")),
-        ])
+        commands = sorted(
+            [
+                (InteractiveBuildCommand.ADD_PERSON, _("Add a person")),
+                (InteractiveBuildCommand.ADD_RELATIONSHIP, _("Add a relationship")),
+                (InteractiveBuildCommand.VISUALIZE, _("Visualize the family tree")),
+                (InteractiveBuildCommand.BUILD_FAMILY_TREE, _("Finish and build the family tree")),
+            ]
+        )
         while True:
             print(f"\n{_('What would you like to do?')}")
             print("\n".join(f"{command}. {help_text}" for command, help_text in commands))
             choice = input(f"{_('Enter your choice')} (1-{len(commands)}): ")
-            
+
             try:
                 choice = int(choice)
                 choice = InteractiveBuildCommand(choice)
@@ -518,7 +531,7 @@ class FamilyTreeBuilder:
                     self._visualize_family_tree()
                 case InteractiveBuildCommand.BUILD_FAMILY_TREE:
                     break
-        
+
         # Validate and build the tree
         errors = self.validate()
         if errors:
@@ -527,7 +540,7 @@ class FamilyTreeBuilder:
                 print(f"- {error}")
             print(_("Please fix these errors and try again."))
             return self.interactive_build()
-        
+
         return self.build()
 
     def _interactive_add_person(self) -> None:
@@ -539,7 +552,7 @@ class FamilyTreeBuilder:
         birth_year = int(birth_year_str) if birth_year_str else None
         death_year_str = input(f"{_('Death year (optional, press Enter to skip)')}: ")
         death_year = int(death_year_str) if death_year_str else None
-        
+
         try:
             self.add_person(
                 name=name,
@@ -557,32 +570,39 @@ class FamilyTreeBuilder:
         print(f"{_('Available people')}:")
         for i, name in enumerate(sorted(self.people.keys()), 1):
             print(f"{i}. {name}")
-        
+
         person_name = input(f"{_('Enter the name of the first person')}: ")
         if person_name not in self.people:
             print(_("Person '{name}' does not exist", name=person_name))
             return
-        
+
         print(f"{_('Relationship types')}:")
         rel_types = [_("father"), _("mother"), _("child"), _("spouse")]
         for i, rel_type in enumerate(rel_types, 1):
             print(f"{i}. {rel_type.capitalize()}")
-        
+
         rel_choice = input(f"{_('Enter your choice')} (1-4): ")
         try:
             rel_type = rel_types[int(rel_choice) - 1]
         except (ValueError, IndexError):
             print(_("Invalid relationship type: {relation}", relation=rel_choice))
             return
-        
+
         relative_name = input(f"{_('Enter the name of the {relation}', relation=rel_type)}: ")
         if relative_name not in self.people:
             print(_("Person '{name}' does not exist", name=relative_name))
             return
-        
+
         try:
             self.add_relationship(person_name, rel_type, relative_name)
-            print(_("Added {relation} relationship between {person1} and {person2}.", relation=rel_type, person1=person_name, person2=relative_name))
+            print(
+                _(
+                    "Added {relation} relationship between {person1} and {person2}.",
+                    relation=rel_type,
+                    person1=person_name,
+                    person2=relative_name,
+                )
+            )
         except ValueError as e:
             print(f"Error: {e}")
 
@@ -619,59 +639,25 @@ class FamilyTreeBuilder:
 
         print(f"\n{_('Visualizing the family tree:')}")
         with force_language(lang):
-            self.generate_family_tree_graphviz("family_tree.png")
+            self.generate_family_tree_graphviz("family_tree", view=True)
 
-    def generate_family_tree_graphviz(self, path: str):
-        # Create a new directed graph
-        dot = Digraph(comment=_('Family Tree'), strict=False)
-        dot.attr(rankdir='TB', size='8,8')
-        
-        # Add nodes for each person
-        for name, person in self.people.items():
-            # Set node attributes based on gender
-            shape = 'box' if person.gender == Gender.MALE else 'ellipse'
-            
-            # Set color based on whether the person is deceased
-            color = 'red' if person == self.deceased else 'black'
-            
-            # Create label with person's details
-            label = f"{name}"
-            if person.birth_year:
-                prefix = pgettext("male", "Born") if person.gender == Gender.MALE else pgettext("female", "Born")
-                label += f"\n{prefix}: {person.birth_year}"
-            if person.death_year:
-                prefix = pgettext("male", "Died") if person.gender == Gender.MALE else pgettext("female", "Died")
-                label += f"\n{prefix}: {person.death_year}"
-            
-            # Add the node
-            dot.node(name, label=label, shape=shape, color=color, 
-                        style='filled' if person == self.deceased else '', 
-                        fillcolor='lightgray' if person == self.deceased else '')
-        
-        # Add edges for parent-child relationships
-        for name, person in self.people.items():
-            # Add edge to father
-            if person.father and person.father.name in self.people:
-                dot.edge(person.father.name, name, color='blue', label=_('father'))
-            
-            # Add edge to mother
-            if person.mother and person.mother.name in self.people:
-                dot.edge(person.mother.name, name, color='green', label=_('mother'))
-        
-        # Add edges for spousal relationships
-        for name, person in self.people.items():
-            for spouse in person.spouses:
-                if spouse.name in self.people and name < spouse.name:  # Only add once
-                    label = pgettext("male", "spouse") if person.gender == Gender.MALE else pgettext("female", "spouse")
-                    dot.edge(name, spouse.name, color='red', style='dashed', dir='none', label=label)
-        
-        # Render the graph
-        try:
-            # Try to render and display the graph
-            dot.render(path, format='png', view=True, cleanup=True)
-            print(_("Family tree visualization has been generated and should open automatically."))
-        except Exception as e:
-            # If rendering fails, just print the DOT source
-            print(_("Could not render the graph. Here's the DOT source:"))
-            print(dot.source)
-            print(f"Error: {e}")
+    def generate_family_tree_graphviz(self, path: str, view: bool = True):
+        """
+        Generate a graphical representation of the family tree using Graphviz.
+
+        Args:
+            path: The path to save the rendered file (without extension)
+            view: Whether to open the rendered file
+
+        Returns:
+            The path to the rendered file
+        """
+        # Import here to avoid circular imports
+        from .visualizers import FamilyTreeGraphvizVisualizer
+
+        # Build the family tree
+        tree = self.build()
+
+        # Create a graphical visualizer and render the output
+        visualizer = FamilyTreeGraphvizVisualizer(tree, self)
+        return visualizer.render(path, view)
