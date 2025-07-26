@@ -6,8 +6,7 @@ from their inputs in an interactive and user-friendly way.
 from enum import IntEnum, auto
 from typing import Dict, List, Optional, Set, Tuple
 
-from .i18n import _, set_language, force_language, get_available_languages
-from gettext import pgettext
+from .i18n import _, set_language, force_language, get_available_languages, pgettext
 
 # Try to import Graphviz, but don't fail if it's not installed
 try:
@@ -620,56 +619,59 @@ class FamilyTreeBuilder:
 
         print(f"\n{_('Visualizing the family tree:')}")
         with force_language(lang):
-            # Create a new directed graph
-            dot = Digraph(comment=_('Family Tree'), strict=False)
-            dot.attr(rankdir='TB', size='8,8')
+            self.generate_family_tree_graphviz("family_tree.png")
+
+    def generate_family_tree_graphviz(self, path: str):
+        # Create a new directed graph
+        dot = Digraph(comment=_('Family Tree'), strict=False)
+        dot.attr(rankdir='TB', size='8,8')
+        
+        # Add nodes for each person
+        for name, person in self.people.items():
+            # Set node attributes based on gender
+            shape = 'box' if person.gender == Gender.MALE else 'ellipse'
             
-            # Add nodes for each person
-            for name, person in self.people.items():
-                # Set node attributes based on gender
-                shape = 'box' if person.gender == Gender.MALE else 'ellipse'
-                
-                # Set color based on whether the person is deceased
-                color = 'red' if person == self.deceased else 'black'
-                
-                # Create label with person's details
-                label = f"{name}"
-                if person.birth_year:
-                    prefix = pgettext("male", "Born") if person.gender == Gender.MALE else pgettext("female", "Born")
-                    label += f"\n{prefix}: {person.birth_year}"
-                if person.death_year:
-                    prefix = pgettext("male", "Died") if person.gender == Gender.MALE else pgettext("female", "Died")
-                    label += f"\n{prefix}: {person.death_year}"
-                
-                # Add the node
-                dot.node(name, label=label, shape=shape, color=color, 
-                            style='filled' if person == self.deceased else '', 
-                            fillcolor='lightgray' if person == self.deceased else '')
+            # Set color based on whether the person is deceased
+            color = 'red' if person == self.deceased else 'black'
             
-            # Add edges for parent-child relationships
-            for name, person in self.people.items():
-                # Add edge to father
-                if person.father and person.father.name in self.people:
-                    dot.edge(person.father.name, name, color='blue', label=_('father'))
-                
-                # Add edge to mother
-                if person.mother and person.mother.name in self.people:
-                    dot.edge(person.mother.name, name, color='green', label=_('mother'))
+            # Create label with person's details
+            label = f"{name}"
+            if person.birth_year:
+                prefix = pgettext("male", "Born") if person.gender == Gender.MALE else pgettext("female", "Born")
+                label += f"\n{prefix}: {person.birth_year}"
+            if person.death_year:
+                prefix = pgettext("male", "Died") if person.gender == Gender.MALE else pgettext("female", "Died")
+                label += f"\n{prefix}: {person.death_year}"
             
-            # Add edges for spousal relationships
-            for name, person in self.people.items():
-                for spouse in person.spouses:
-                    if spouse.name in self.people and name < spouse.name:  # Only add once
-                        label = pgettext("male", "spouse") if person.gender == Gender.MALE else pgettext("female", "spouse")
-                        dot.edge(name, spouse.name, color='red', style='dashed', dir='none', label=label)
+            # Add the node
+            dot.node(name, label=label, shape=shape, color=color, 
+                        style='filled' if person == self.deceased else '', 
+                        fillcolor='lightgray' if person == self.deceased else '')
+        
+        # Add edges for parent-child relationships
+        for name, person in self.people.items():
+            # Add edge to father
+            if person.father and person.father.name in self.people:
+                dot.edge(person.father.name, name, color='blue', label=_('father'))
             
-            # Render the graph
-            try:
-                # Try to render and display the graph
-                dot.render('family_tree.dot', format='png', view=True, cleanup=True)
-                print(_("Family tree visualization has been generated and should open automatically."))
-            except Exception as e:
-                # If rendering fails, just print the DOT source
-                print(_("Could not render the graph. Here's the DOT source:"))
-                print(dot.source)
-                print(f"Error: {e}")
+            # Add edge to mother
+            if person.mother and person.mother.name in self.people:
+                dot.edge(person.mother.name, name, color='green', label=_('mother'))
+        
+        # Add edges for spousal relationships
+        for name, person in self.people.items():
+            for spouse in person.spouses:
+                if spouse.name in self.people and name < spouse.name:  # Only add once
+                    label = pgettext("male", "spouse") if person.gender == Gender.MALE else pgettext("female", "spouse")
+                    dot.edge(name, spouse.name, color='red', style='dashed', dir='none', label=label)
+        
+        # Render the graph
+        try:
+            # Try to render and display the graph
+            dot.render(path, format='png', view=True, cleanup=True)
+            print(_("Family tree visualization has been generated and should open automatically."))
+        except Exception as e:
+            # If rendering fails, just print the DOT source
+            print(_("Could not render the graph. Here's the DOT source:"))
+            print(dot.source)
+            print(f"Error: {e}")

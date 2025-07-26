@@ -45,6 +45,7 @@ def _get_translation(language: str) -> _gettext.NullTranslations:
             # If the translation file is not found, use a NullTranslations object
             _translations[language] = _gettext.NullTranslations()
     
+    _translations[language].install()
     return _translations[language]
 
 

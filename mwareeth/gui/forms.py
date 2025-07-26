@@ -127,8 +127,13 @@ class PersonForm(ttk.Frame):
         self.is_deceased_var.set(False)
 
 
-    def update_language(self):
-        """Update the form widgets with the current language translations."""
+    def update_language(self, direction="ltr"):
+        """
+        Update the form widgets with the current language translations and adjust layout for text direction.
+        
+        Args:
+            direction: The text direction ("rtl" for right-to-left, "ltr" for left-to-right)
+        """
         # Update labels
         self.widgets["name_label"].configure(text=_("Name:"))
         self.widgets["gender_label"].configure(text=_("Gender:"))
@@ -145,6 +150,64 @@ class PersonForm(ttk.Frame):
         
         # Update button
         self.widgets["add_person_button"].configure(text=_("Add Person"))
+        
+        # Update layout based on text direction
+        self.update_layout(direction)
+    
+    def update_layout(self, direction="ltr"):
+        """
+        Update the form layout based on text direction.
+        
+        Args:
+            direction: The text direction ("rtl" for right-to-left, "ltr" for left-to-right)
+        """
+        # Get all grid slaves
+        slaves = self.grid_slaves()
+        
+        # Store current grid info for each widget
+        grid_info = {}
+        for widget in slaves:
+            grid_info[widget] = widget.grid_info()
+        
+        # Remove all widgets from grid
+        for widget in slaves:
+            widget.grid_forget()
+        
+        # Reconfigure grid
+        if direction == "rtl":
+            # RTL layout: labels on right, fields on left
+            self.columnconfigure(0, weight=1)  # Fields column gets weight
+            self.columnconfigure(1, weight=0)  # Labels column has fixed width
+            
+            # Rearrange widgets
+            for widget, info in grid_info.items():
+                row = info["row"]
+                col = info["column"]
+                sticky = info["sticky"]
+                padx = info["padx"]
+                pady = info["pady"]
+                columnspan = info["columnspan"]
+                
+                # Swap columns (0->1, 1->0) except for widgets that span multiple columns
+                if columnspan == 1:
+                    new_col = 1 if col == 0 else 0
+                    # Adjust sticky direction
+                    if "w" in sticky.lower():
+                        sticky = sticky.lower().replace("w", "e").upper()
+                    elif "e" in sticky.lower():
+                        sticky = sticky.lower().replace("e", "w").upper()
+                else:
+                    new_col = col
+                
+                widget.grid(row=row, column=new_col, sticky=sticky, padx=padx, pady=pady, columnspan=columnspan)
+        else:
+            # LTR layout: labels on left, fields on right
+            self.columnconfigure(0, weight=0)  # Labels column has fixed width
+            self.columnconfigure(1, weight=1)  # Fields column gets weight
+            
+            # Restore original layout
+            for widget, info in grid_info.items():
+                widget.grid(**info)
 
 
 class RelationshipForm(ttk.Frame):
@@ -222,8 +285,13 @@ class RelationshipForm(ttk.Frame):
         self.person_combo['values'] = people
         self.relative_combo['values'] = people
     
-    def update_language(self):
-        """Update the form widgets with the current language translations."""
+    def update_language(self, direction="ltr"):
+        """
+        Update the form widgets with the current language translations and adjust layout for text direction.
+        
+        Args:
+            direction: The text direction ("rtl" for right-to-left, "ltr" for left-to-right)
+        """
         # Update labels
         self.widgets["person_label"].configure(text=_("Person:"))
         self.widgets["relationship_label"].configure(text=_("Relationship:"))
@@ -234,6 +302,64 @@ class RelationshipForm(ttk.Frame):
         
         # Update button
         self.widgets["add_relationship_button"].configure(text=_("Add Relationship"))
+        
+        # Update layout based on text direction
+        self.update_layout(direction)
+    
+    def update_layout(self, direction="ltr"):
+        """
+        Update the form layout based on text direction.
+        
+        Args:
+            direction: The text direction ("rtl" for right-to-left, "ltr" for left-to-right)
+        """
+        # Get all grid slaves
+        slaves = self.grid_slaves()
+        
+        # Store current grid info for each widget
+        grid_info = {}
+        for widget in slaves:
+            grid_info[widget] = widget.grid_info()
+        
+        # Remove all widgets from grid
+        for widget in slaves:
+            widget.grid_forget()
+        
+        # Reconfigure grid
+        if direction == "rtl":
+            # RTL layout: labels on right, fields on left
+            self.columnconfigure(0, weight=1)  # Fields column gets weight
+            self.columnconfigure(1, weight=0)  # Labels column has fixed width
+            
+            # Rearrange widgets
+            for widget, info in grid_info.items():
+                row = info["row"]
+                col = info["column"]
+                sticky = info["sticky"]
+                padx = info["padx"]
+                pady = info["pady"]
+                columnspan = info["columnspan"]
+                
+                # Swap columns (0->1, 1->0) except for widgets that span multiple columns
+                if columnspan == 1:
+                    new_col = 1 if col == 0 else 0
+                    # Adjust sticky direction
+                    if "w" in sticky.lower():
+                        sticky = sticky.lower().replace("w", "e").upper()
+                    elif "e" in sticky.lower():
+                        sticky = sticky.lower().replace("e", "w").upper()
+                else:
+                    new_col = col
+                
+                widget.grid(row=row, column=new_col, sticky=sticky, padx=padx, pady=pady, columnspan=columnspan)
+        else:
+            # LTR layout: labels on left, fields on right
+            self.columnconfigure(0, weight=0)  # Labels column has fixed width
+            self.columnconfigure(1, weight=1)  # Fields column gets weight
+            
+            # Restore original layout
+            for widget, info in grid_info.items():
+                widget.grid(**info)
     
     def submit(self):
         """Submit the form."""
