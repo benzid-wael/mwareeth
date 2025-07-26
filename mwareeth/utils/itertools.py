@@ -1,4 +1,4 @@
-from itertools import tee, compress
+from itertools import compress, tee
 from operator import not_
 
 
