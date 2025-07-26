@@ -42,6 +42,10 @@ class Person:
         return self.death_year is None
 
     @property
+    def is_deceased(self) -> bool:
+        return not self.is_alive
+
+    @property
     def fullname(self) -> str:
         fullname = self.name.lower()
         father = self.father

@@ -278,6 +278,35 @@ class TestFamilyTree(unittest.TestCase):
             son.add_child(deceased)
             FamilyTree(deceased)
 
+    def test_change_focal_point(self):
+        deceased = Person("Deceased", Gender.MALE)
+        son = (
+            Person("Son", Gender.MALE)
+            .add_child(Person("Grandson", Gender.MALE))
+            .add_child(Person("Granddaughter", Gender.FEMALE))
+            .add_spouse(Person("Wife", Gender.FEMALE))
+        )
+        deceased.add_child(son)
+        family_tree = FamilyTree(deceased)
+        # when
+        new_family_tree = family_tree.change_focal_point(son)
+        # then
+        self.assertEqual(new_family_tree.deceased, son)
+        self.assertEqual(
+            new_family_tree.get_relatives(RelationshipType.FATHER), {deceased}
+        )
+
+    def test_get_all_deceased(self):
+        # Create a family tree with multiple deceased people
+        deceased = Person("Deceased", Gender.MALE, death_year=1990)
+        son = Person("Son", Gender.MALE, death_year=2010)
+        daughter = Person("Daughter", Gender.FEMALE)
+        deceased.add_child(son)
+        deceased.add_child(daughter)
+        # When / Then
+        family_tree = FamilyTree(deceased)
+        self.assertEqual(family_tree.get_all_deceased(), {deceased, son})
+
 
 if __name__ == "__main__":
     unittest.main()

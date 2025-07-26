@@ -211,6 +211,10 @@ class FamilyTree:
         )
         self._generate_relationships()
 
+    @classmethod
+    def change_focal_point(cls, person: Person) -> "FamilyTree":
+        return cls(person)
+
     def get_relatives(self, relationship_type: RelationshipType) -> Set[Person]:
         """
         Get all relatives of a specific relationship type.
@@ -241,6 +245,15 @@ class FamilyTree:
                     members.add(relative)
                     queue.append(relative)
         return members
+
+    def get_all_deceased(self) -> Set[Person]:
+        """
+        Get all deceased family members.
+
+        Returns:
+            A set of all deceased people in the family tree.
+        """
+        return {person for person in self.get_all_members() if person.is_deceased}
 
     def _generate_relationships(self) -> None:
         """
