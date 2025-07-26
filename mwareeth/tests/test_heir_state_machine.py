@@ -1,8 +1,8 @@
 import unittest
 
-from ..heir_builder import HeirStateMachine
-from ..entities.relationship import RelationshipType
 from ..entities.heir import HeirType
+from ..entities.relationship import RelationshipType
+from ..heir_builder import HeirStateMachine
 
 
 class TestHeirStateMachine(unittest.TestCase):
@@ -85,7 +85,6 @@ class TestHeirStateMachine(unittest.TestCase):
         state_machine = HeirStateMachine(allow_event_without_transition=False)
         state_machine.transition(RelationshipType.MATERNAL_UNCLE_FULL)
         self.assertEqual(state_machine.current_heir_type, HeirType.UTERINE)
-
 
     def test_maternal_aunt_transitions(self):
         """Test transitions to maternal aunt states (all should be UTERINE)."""
@@ -174,7 +173,7 @@ class TestHeirStateMachine(unittest.TestCase):
         # Test transition from HUSBAND (final state)
         state_machine = HeirStateMachine(allow_event_without_transition=False)
         state_machine.transition(RelationshipType.HUSBAND)
-        
+
         # HUSBAND is a final state, so any further transitions should raise an exception
         with self.assertRaises(Exception):
             state_machine.transition(RelationshipType.SON)
@@ -182,7 +181,7 @@ class TestHeirStateMachine(unittest.TestCase):
         # Test transition from WIFE (final state)
         state_machine = HeirStateMachine(allow_event_without_transition=False)
         state_machine.transition(RelationshipType.WIFE)
-        
+
         # WIFE is a final state, so any further transitions should raise an exception
         with self.assertRaises(Exception):
             state_machine.transition(RelationshipType.DAUGHTER)
@@ -190,11 +189,11 @@ class TestHeirStateMachine(unittest.TestCase):
         # Test transition from STRANGER (final state)
         state_machine = HeirStateMachine(allow_event_without_transition=False)
         state_machine.transition(RelationshipType.SELF)  # This transitions to STRANGER
-        
+
         # STRANGER is a final state, so any further transitions should raise an exception
         with self.assertRaises(Exception):
             state_machine.transition(RelationshipType.FATHER)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

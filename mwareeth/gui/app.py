@@ -37,7 +37,7 @@ class MwareethGUI:
         # Create the main window
         self.root = tk.Tk()
         self.root.title(_("Mwareeth - Islamic Inheritance Calculator"))
-        
+
         # First, let's centralize the GUI
         # Set window size
         window_width = 1000

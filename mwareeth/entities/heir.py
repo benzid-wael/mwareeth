@@ -3,6 +3,7 @@ from enum import Enum, auto
 from typing import List
 
 from .madhhab import Madhhab
+from .person import Person
 from .relationship import RelationshipType
 
 
@@ -42,9 +43,33 @@ class HeirType(Enum):
     STRANGER = auto()
     SELF = auto()
 
+    def __repr__(self) -> str:
+        return self.name
+
 
 @dataclass(frozen=True)
 class Heir:
+    """
+    Represents a potential heir in Islamic inheritance calculations.
+
+    This class is used to represent a person who may inherit from the deceased
+    according to Islamic inheritance rules. It contains information about the
+    type of heir, the lineage path that led to this heir status, and the
+    school of Islamic jurisprudence (madhhab) to use for calculations.
+
+    While the Relationship class represents connections between people in the family tree,
+    the Heir class specifically represents inheritance rights according to Islamic law.
+    These two classes work together but serve different purposes:
+    - Relationship: Used for family tree navigation and relationship identification
+    - Heir: Used for inheritance calculations based on Islamic law
+
+    Attributes:
+        heir_type: The type of heir (e.g., son, daughter, father, etc.)
+        lineage: The path of relationships that led to this heir status
+        madhhab: The school of Islamic jurisprudence to use for calculations
+    """
+
+    person: Person
     heir_type: HeirType
     lineage: List[RelationshipType]
     madhhab: Madhhab | None = None

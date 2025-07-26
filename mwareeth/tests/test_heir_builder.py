@@ -1,8 +1,8 @@
 import unittest
 
-from ..heir_builder import deduce_heir_type
-from ..entities.relationship import RelationshipType
 from ..entities.heir import HeirType
+from ..entities.relationship import RelationshipType
+from ..heir_builder import deduce_heir_type
 
 
 class TestHeirBuilder(unittest.TestCase):
@@ -253,5 +253,5 @@ class TestHeirBuilder(unittest.TestCase):
         self.assertEqual(deduce_heir_type(lineage), HeirType.UTERINE)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

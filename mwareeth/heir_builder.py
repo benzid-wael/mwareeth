@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 from statemachine import StateMachine
 from statemachine.states import States
 
-from .entities.heir import HeirType
-from .entities.relationship import RelationshipType
+from .entities.heir import Heir, HeirType
+from .entities.madhhab import Madhhab
+from .entities.relationship import Relationship, RelationshipType
 from .utils.events import Events
 
 FINAL_STATES = {HeirType.HUSBAND, HeirType.WIFE, HeirType.STRANGER}
@@ -129,10 +130,45 @@ class HeirStateMachine(StateMachine):
 
 
 def deduce_heir_type(lineage: List[RelationshipType]) -> HeirType:
+    """
+    Deduce the heir type from a lineage of relationships.
+
+    Args:
+        lineage: A list of relationship types representing the path from the deceased to the heir
+
+    Returns:
+        The deduced heir type
+    """
     state_machine = HeirStateMachine(allow_event_without_transition=False)
     for relationship in lineage:
         state_machine.transition(relationship)
     return state_machine.current_heir_type
+
+
+def create_heir_from_relationship(
+    relationship: Relationship, madhhab: Optional[Madhhab] = None
+) -> Heir:
+    """
+    Create an Heir from a Relationship.
+
+    This helper provides a bridge between the Relationship class (used for family tree navigation)
+    and the Heir class (used for inheritance calculations). It allows converting a relationship
+    to an heir with the appropriate heir type.
+
+    Args:
+        relationship: The relationship to convert
+        madhhab: The school of Islamic jurisprudence to use for calculations
+
+    Returns:
+        A new Heir instance based on the provided relationship
+    """
+    heir_type = deduce_heir_type(relationship.lineage)
+    return Heir(
+        person=relationship.person,
+        heir_type=heir_type,
+        lineage=relationship.lineage,
+        madhhab=madhhab,
+    )
 
 
 if __name__ == "__main__":

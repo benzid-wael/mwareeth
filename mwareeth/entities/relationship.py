@@ -77,13 +77,25 @@ DESCENDANT_RELATIONSHIPS = {
 @dataclass(frozen=True)
 class Relationship:
     """
-    Represents a relationship between two people.
+    Represents a relationship between two people in the family tree.
+
+    This class is used for family tree navigation and relationship identification.
+    It contains information about a person, their relationship to the deceased,
+    and the lineage path that led to this relationship.
+
+    While the Relationship class represents connections between people in the family tree,
+    the Heir class specifically represents inheritance rights according to Islamic law.
+    These two classes work together but serve different purposes:
+    - Relationship: Used for family tree navigation and relationship identification
+    - Heir: Used for inheritance calculations based on Islamic law
+
+    To convert a Relationship to an Heir for inheritance calculations, use the
+    Heir.from_relationship() method.
 
     Attributes:
         person: The person in the relationship
         relationship_type: The type of relationship (father, mother, etc.)
         lineage: The path of relationships that led to this relationship
-        lineage_type: Whether the relationship is through paternal or maternal line
     """
 
     person: Person

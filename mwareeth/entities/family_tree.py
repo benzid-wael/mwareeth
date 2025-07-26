@@ -7,9 +7,13 @@ import itertools
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set
+
+from ..heir_builder import create_heir_from_relationship
 
 # Import the translator if available, otherwise use a simple translation function
+from .heir import Heir
+from .madhhab import Madhhab
 from .person import Gender, Person
 from .relationship import Relationship, RelationshipType
 
@@ -127,6 +131,38 @@ class FamilyTree:
             A set of all deceased people in the family tree.
         """
         return {person for person in self.get_all_members() if person.is_deceased}
+
+    def get_heirs(self, madhhab: Optional[Madhhab] = None) -> List[Heir]:
+        """
+        Get all potential heirs of the deceased.
+
+        This method converts relationships to heirs using the create_heir_from_relationship
+        function, which bridges the gap between the Relationship class (used for family tree
+        navigation) and the Heir class (used for inheritance calculations).
+
+        Args:
+            madhhab: The school of Islamic jurisprudence to use for calculations
+
+        Returns:
+            A list of Heir objects representing potential heirs of the deceased
+        """
+        heirs = []
+        for relationships in self._relationships.values():
+            for relationship in relationships:
+                # Skip the deceased person
+                if relationship.relationship_type == RelationshipType.SELF:
+                    continue
+
+                # Convert the relationship to an heir
+                heir = create_heir_from_relationship(relationship, madhhab)
+
+                # Skip strangers (non-heirs)
+                if heir.is_stranger:
+                    continue
+
+                heirs.append(heir)
+
+        return heirs
 
     def visualize(self) -> str:
         """
