@@ -4,9 +4,9 @@ This module provides form components for the GUI.
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Callable, List, Optional, Dict, Any
+from typing import Callable, List, Dict, Any
 
-from ..entities.person import Gender, Religion
+from ..entities.person import Religion
 from ..i18n import _
 
 
@@ -41,41 +41,65 @@ class PersonForm(ttk.Frame):
         self.widgets["name_label"] = ttk.Label(self, text=_("Name:"))
         self.widgets["name_label"].grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.name_var = tk.StringVar()
-        ttk.Entry(self, textvariable=self.name_var).grid(row=0, column=1, sticky=tk.W + tk.E, padx=5, pady=5)
+        ttk.Entry(self, textvariable=self.name_var).grid(
+            row=0, column=1, sticky=tk.W + tk.E, padx=5, pady=5
+        )
 
         # Gender field
         self.widgets["gender_label"] = ttk.Label(self, text=_("Gender:"))
         self.widgets["gender_label"].grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.gender_var = tk.StringVar(value="male")
-        self.widgets["male_radio"] = ttk.Radiobutton(self, text=_("Male"), variable=self.gender_var, value="male")
+        self.widgets["male_radio"] = ttk.Radiobutton(
+            self, text=_("Male"), variable=self.gender_var, value="male"
+        )
         self.widgets["male_radio"].grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
-        self.widgets["female_radio"] = ttk.Radiobutton(self, text=_("Female"), variable=self.gender_var, value="female")
+        self.widgets["female_radio"] = ttk.Radiobutton(
+            self, text=_("Female"), variable=self.gender_var, value="female"
+        )
         self.widgets["female_radio"].grid(row=1, column=2, sticky=tk.W, padx=5, pady=5)
 
         # Religion field
         self.widgets["religion_label"] = ttk.Label(self, text=_("Religion:"))
-        self.widgets["religion_label"].grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["religion_label"].grid(
+            row=2, column=0, sticky=tk.W, padx=5, pady=5
+        )
         self.religion_var = tk.StringVar(value="Islam")
-        self.widgets["religion_combo"] = ttk.Combobox(self, textvariable=self.religion_var)
+        self.widgets["religion_combo"] = ttk.Combobox(
+            self, textvariable=self.religion_var
+        )
         self.widgets["religion_combo"]["values"] = [r.value for r in Religion]
-        self.widgets["religion_combo"].grid(row=2, column=1, sticky=tk.W + tk.E, padx=5, pady=5)
+        self.widgets["religion_combo"].grid(
+            row=2, column=1, sticky=tk.W + tk.E, padx=5, pady=5
+        )
 
         # Birth year field
         self.widgets["birth_year_label"] = ttk.Label(self, text=_("Birth Year:"))
-        self.widgets["birth_year_label"].grid(row=3, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["birth_year_label"].grid(
+            row=3, column=0, sticky=tk.W, padx=5, pady=5
+        )
         self.birth_year_var = tk.StringVar()
-        ttk.Entry(self, textvariable=self.birth_year_var).grid(row=3, column=1, sticky=tk.W + tk.E, padx=5, pady=5)
+        ttk.Entry(self, textvariable=self.birth_year_var).grid(
+            row=3, column=1, sticky=tk.W + tk.E, padx=5, pady=5
+        )
 
         # Death year field
         self.widgets["death_year_label"] = ttk.Label(self, text=_("Death Year:"))
-        self.widgets["death_year_label"].grid(row=4, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["death_year_label"].grid(
+            row=4, column=0, sticky=tk.W, padx=5, pady=5
+        )
         self.death_year_var = tk.StringVar()
-        ttk.Entry(self, textvariable=self.death_year_var).grid(row=4, column=1, sticky=tk.W + tk.E, padx=5, pady=5)
+        ttk.Entry(self, textvariable=self.death_year_var).grid(
+            row=4, column=1, sticky=tk.W + tk.E, padx=5, pady=5
+        )
 
         # Is deceased checkbox
         self.is_deceased_var = tk.BooleanVar(value=False)
-        self.widgets["is_deceased_check"] = ttk.Checkbutton(self, text=_("Is Deceased"), variable=self.is_deceased_var)
-        self.widgets["is_deceased_check"].grid(row=5, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5)
+        self.widgets["is_deceased_check"] = ttk.Checkbutton(
+            self, text=_("Is Deceased"), variable=self.is_deceased_var
+        )
+        self.widgets["is_deceased_check"].grid(
+            row=5, column=0, columnspan=2, sticky=tk.W, padx=5, pady=5
+        )
 
         # Submit button
         self.widgets["add_person_button"] = ttk.Button(
@@ -198,7 +222,14 @@ class PersonForm(ttk.Frame):
                 else:
                     new_col = col
 
-                widget.grid(row=row, column=new_col, sticky=sticky, padx=padx, pady=pady, columnspan=columnspan)
+                widget.grid(
+                    row=row,
+                    column=new_col,
+                    sticky=sticky,
+                    padx=padx,
+                    pady=pady,
+                    columnspan=columnspan,
+                )
         else:
             # LTR layout: labels on left, fields on right
             self.columnconfigure(0, weight=0)  # Labels column has fixed width
@@ -246,15 +277,28 @@ class RelationshipForm(ttk.Frame):
 
         # Relationship type field
         self.widgets["relationship_label"] = ttk.Label(self, text=_("Relationship:"))
-        self.widgets["relationship_label"].grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["relationship_label"].grid(
+            row=1, column=0, sticky=tk.W, padx=5, pady=5
+        )
         self.relation_var = tk.StringVar()
-        self.widgets["relation_combo"] = ttk.Combobox(self, textvariable=self.relation_var)
-        self.widgets["relation_combo"]["values"] = [_("father"), _("mother"), _("child"), _("spouse")]
-        self.widgets["relation_combo"].grid(row=1, column=1, sticky=tk.W + tk.E, padx=5, pady=5)
+        self.widgets["relation_combo"] = ttk.Combobox(
+            self, textvariable=self.relation_var
+        )
+        self.widgets["relation_combo"]["values"] = [
+            _("father"),
+            _("mother"),
+            _("child"),
+            _("spouse"),
+        ]
+        self.widgets["relation_combo"].grid(
+            row=1, column=1, sticky=tk.W + tk.E, padx=5, pady=5
+        )
 
         # Relative field
         self.widgets["relative_label"] = ttk.Label(self, text=_("Relative:"))
-        self.widgets["relative_label"].grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
+        self.widgets["relative_label"].grid(
+            row=2, column=0, sticky=tk.W, padx=5, pady=5
+        )
         self.relative_var = tk.StringVar()
         self.relative_combo = ttk.Combobox(self, textvariable=self.relative_var)
         self.relative_combo.grid(row=2, column=1, sticky=tk.W + tk.E, padx=5, pady=5)
@@ -264,11 +308,17 @@ class RelationshipForm(ttk.Frame):
             self,
             text=_("Add Relationship"),
             command=self.submit,
-            image=self.icons.get("add_relationship") if "add_relationship" in self.icons else None,
+            image=(
+                self.icons.get("add_relationship")
+                if "add_relationship" in self.icons
+                else None
+            ),
             compound=tk.LEFT,
             padding=(5, 2),
         )
-        self.widgets["add_relationship_button"].grid(row=3, column=0, columnspan=2, pady=10)
+        self.widgets["add_relationship_button"].grid(
+            row=3, column=0, columnspan=2, pady=10
+        )
 
         # Configure grid
         self.columnconfigure(1, weight=1)
@@ -297,7 +347,12 @@ class RelationshipForm(ttk.Frame):
         self.widgets["relative_label"].configure(text=_("Relative:"))
 
         # Update relationship values
-        self.widgets["relation_combo"]["values"] = [_("father"), _("mother"), _("child"), _("spouse")]
+        self.widgets["relation_combo"]["values"] = [
+            _("father"),
+            _("mother"),
+            _("child"),
+            _("spouse"),
+        ]
 
         # Update button
         self.widgets["add_relationship_button"].configure(text=_("Add Relationship"))
@@ -350,7 +405,14 @@ class RelationshipForm(ttk.Frame):
                 else:
                     new_col = col
 
-                widget.grid(row=row, column=new_col, sticky=sticky, padx=padx, pady=pady, columnspan=columnspan)
+                widget.grid(
+                    row=row,
+                    column=new_col,
+                    sticky=sticky,
+                    padx=padx,
+                    pady=pady,
+                    columnspan=columnspan,
+                )
         else:
             # LTR layout: labels on left, fields on right
             self.columnconfigure(0, weight=0)  # Labels column has fixed width

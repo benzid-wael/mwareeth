@@ -8,14 +8,12 @@ import json
 import os
 import platform
 import tempfile
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Optional
 from pathlib import Path
 
 from ..family_tree_builder import FamilyTreeBuilder
-from ..entities.person import Gender, Religion
 from ..i18n import _, set_language
 
-from .family_tree_view import FamilyTreeView
 from .forms import PersonForm, RelationshipForm
 
 
@@ -68,7 +66,9 @@ class MwareethGUI:
         # Status bar
         self.status_var = tk.StringVar()
         self.status_var.set(_("Ready"))
-        self.status_bar = ttk.Label(self.root, textvariable=self.status_var, relief=tk.SUNKEN, anchor=tk.W)
+        self.status_bar = ttk.Label(
+            self.root, textvariable=self.status_var, relief=tk.SUNKEN, anchor=tk.W
+        )
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
     def load_icons(self):
@@ -125,8 +125,12 @@ class MwareethGUI:
 
         # Language menu
         language_menu = tk.Menu(menubar, tearoff=0)
-        language_menu.add_command(label=_("English"), command=lambda: self.change_language("en"))
-        language_menu.add_command(label=_("Arabic"), command=lambda: self.change_language("ar"))
+        language_menu.add_command(
+            label=_("English"), command=lambda: self.change_language("en")
+        )
+        language_menu.add_command(
+            label=_("Arabic"), command=lambda: self.change_language("ar")
+        )
         menubar.add_cascade(label=_("Language"), menu=language_menu)
 
         # Help menu
@@ -154,11 +158,15 @@ class MwareethGUI:
         person_form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         self.person_form = PersonForm(
-            person_form_frame, self.add_person, self.icons if hasattr(self, "icons") else None
+            person_form_frame,
+            self.add_person,
+            self.icons if hasattr(self, "icons") else None,
         )
 
         # Right frame: Add relationship form
-        relationship_form_frame = ttk.LabelFrame(right_frame, text=_("Add Relationship"))
+        relationship_form_frame = ttk.LabelFrame(
+            right_frame, text=_("Add Relationship")
+        )
         relationship_form_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         self.relationship_form = RelationshipForm(
@@ -181,7 +189,10 @@ class MwareethGUI:
 
         # Create a treeview for the people list
         self.people_tree = ttk.Treeview(
-            tree_frame, columns=("name", "gender", "deceased"), show="headings", yscrollcommand=scrollbar.set
+            tree_frame,
+            columns=("name", "gender", "deceased"),
+            show="headings",
+            yscrollcommand=scrollbar.set,
         )
         self.people_tree.heading("name", text=_("Name"))
         self.people_tree.heading("gender", text=_("Gender"))
@@ -199,7 +210,11 @@ class MwareethGUI:
             people_frame,
             text=_("Set as Deceased"),
             command=self.set_as_deceased,
-            image=self.icons.get("deceased") if hasattr(self, "icons") and "deceased" in self.icons else None,
+            image=(
+                self.icons.get("deceased")
+                if hasattr(self, "icons") and "deceased" in self.icons
+                else None
+            ),
             compound=tk.LEFT,
             padding=(5, 2),
         )
@@ -220,7 +235,9 @@ class MwareethGUI:
         self.text_view.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
         # Add vertical scrollbar to text widget
-        text_scrollbar_y = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=self.text_view.yview)
+        text_scrollbar_y = ttk.Scrollbar(
+            text_frame, orient=tk.VERTICAL, command=self.text_view.yview
+        )
         text_scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
         self.text_view.configure(yscrollcommand=text_scrollbar_y.set)
 
@@ -237,15 +254,23 @@ class MwareethGUI:
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         # Add scrollbars to canvas
-        graph_scrollbar_y = ttk.Scrollbar(graph_container, orient=tk.VERTICAL, command=self.canvas.yview)
+        graph_scrollbar_y = ttk.Scrollbar(
+            graph_container, orient=tk.VERTICAL, command=self.canvas.yview
+        )
         graph_scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        graph_scrollbar_x = ttk.Scrollbar(graph_container, orient=tk.HORIZONTAL, command=self.canvas.xview)
+        graph_scrollbar_x = ttk.Scrollbar(
+            graph_container, orient=tk.HORIZONTAL, command=self.canvas.xview
+        )
         graph_scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
-        self.canvas.configure(yscrollcommand=graph_scrollbar_y.set, xscrollcommand=graph_scrollbar_x.set)
+        self.canvas.configure(
+            yscrollcommand=graph_scrollbar_y.set, xscrollcommand=graph_scrollbar_x.set
+        )
 
         # Create a frame for the image to enable zooming
         self.image_frame = ttk.Frame(self.canvas)
-        self.canvas_window = self.canvas.create_window(0, 0, anchor=tk.NW, window=self.image_frame)
+        self.canvas_window = self.canvas.create_window(
+            0, 0, anchor=tk.NW, window=self.image_frame
+        )
 
         # Create a label for displaying the image
         self.image_label = ttk.Label(self.image_frame)
@@ -265,20 +290,38 @@ class MwareethGUI:
         control_frame.pack(fill=tk.X, padx=5, pady=5)
 
         # Create zoom buttons
-        zoom_in_btn = ttk.Button(control_frame, text="+", width=2, command=self.zoom_in, style="Control.TButton")
+        zoom_in_btn = ttk.Button(
+            control_frame,
+            text="+",
+            width=2,
+            command=self.zoom_in,
+            style="Control.TButton",
+        )
         zoom_in_btn.pack(side=tk.LEFT, padx=2)
 
-        zoom_out_btn = ttk.Button(control_frame, text="-", width=2, command=self.zoom_out, style="Control.TButton")
+        zoom_out_btn = ttk.Button(
+            control_frame,
+            text="-",
+            width=2,
+            command=self.zoom_out,
+            style="Control.TButton",
+        )
         zoom_out_btn.pack(side=tk.LEFT, padx=2)
 
         reset_zoom_btn = ttk.Button(
-            control_frame, text=_("Reset Zoom"), command=self.reset_zoom, style="Control.TButton"
+            control_frame,
+            text=_("Reset Zoom"),
+            command=self.reset_zoom,
+            style="Control.TButton",
         )
         reset_zoom_btn.pack(side=tk.LEFT, padx=2)
 
         # Button to open in new window
         open_window_btn = ttk.Button(
-            control_frame, text=_("Open in Window"), command=self.open_in_new_window, style="Control.TButton"
+            control_frame,
+            text=_("Open in Window"),
+            command=self.open_in_new_window,
+            style="Control.TButton",
         )
         open_window_btn.pack(side=tk.LEFT, padx=2)
 
@@ -298,7 +341,9 @@ class MwareethGUI:
             text=_("Refresh"),
             command=self.refresh_visualization,
             image=(
-                self.icons.get("visualize_tree") if hasattr(self, "icons") and "visualize_tree" in self.icons else None
+                self.icons.get("visualize_tree")
+                if hasattr(self, "icons") and "visualize_tree" in self.icons
+                else None
             ),
             compound=tk.LEFT,
             padding=(5, 2),
@@ -311,11 +356,15 @@ class MwareethGUI:
         self.notebook.add(inheritance_tab, text=_("Inheritance"))
 
         # Create a text widget to display the inheritance calculation
-        self.inheritance_text = tk.Text(inheritance_tab, wrap=tk.WORD, state=tk.DISABLED)
+        self.inheritance_text = tk.Text(
+            inheritance_tab, wrap=tk.WORD, state=tk.DISABLED
+        )
         self.inheritance_text.pack(fill=tk.BOTH, expand=True)
 
         # Add scrollbar
-        scrollbar = ttk.Scrollbar(inheritance_tab, orient=tk.VERTICAL, command=self.inheritance_text.yview)
+        scrollbar = ttk.Scrollbar(
+            inheritance_tab, orient=tk.VERTICAL, command=self.inheritance_text.yview
+        )
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.inheritance_text.configure(yscrollcommand=scrollbar.set)
 
@@ -368,7 +417,9 @@ class MwareethGUI:
         except ValueError as e:
             messagebox.showerror(_("Error"), str(e))
 
-    def add_relationship(self, person_name: str, relation_type: str, relative_name: str) -> None:
+    def add_relationship(
+        self, person_name: str, relation_type: str, relative_name: str
+    ) -> None:
         """
         Add a relationship between two people.
 
@@ -416,7 +467,9 @@ class MwareethGUI:
         # Add people to the treeview
         for name, person in self.builder.people.items():
             is_deceased = _("Yes") if person == self.builder.deceased else _("No")
-            self.people_tree.insert("", tk.END, values=(name, person.gender.value, is_deceased))
+            self.people_tree.insert(
+                "", tk.END, values=(name, person.gender.value, is_deceased)
+            )
 
         # Update the relationship form with the current people
         if hasattr(self, "relationship_form"):
@@ -426,7 +479,9 @@ class MwareethGUI:
         """Refresh the family tree visualization in both tabs."""
         try:
             # Import visualizers here to avoid circular imports
-            from ..visualizers import FamilyTreeTextVisualizer, FamilyTreeGraphvizVisualizer, GRAPHVIZ_AVAILABLE
+            from ..visualizers import (
+                FamilyTreeTextVisualizer,
+            )
 
             # Build the family tree
             tree = self.builder.build()
@@ -478,7 +533,9 @@ class MwareethGUI:
 
                     # Update the canvas scrollregion to match the image size
                     self.image_label.update_idletasks()  # Make sure the label has been updated
-                    self.canvas.config(scrollregion=(0, 0, self.image.width(), self.image.height()))
+                    self.canvas.config(
+                        scrollregion=(0, 0, self.image.width(), self.image.height())
+                    )
 
                     # Reset zoom level
                     self.zoom_level = 1.0
@@ -487,20 +544,32 @@ class MwareethGUI:
                     self.save_image_btn.configure(state=tk.NORMAL)
                 except Exception as img_error:
                     self.text_view.insert(tk.END, "\n\n")
-                    self.text_view.insert(tk.END, _("Error displaying image: {error}", error=str(img_error)))
+                    self.text_view.insert(
+                        tk.END,
+                        _("Error displaying image: {error}", error=str(img_error)),
+                    )
             else:
                 self.text_view.insert(tk.END, "\n\n")
                 self.text_view.insert(
-                    tk.END, _("No deceased person set. Please set a deceased person to visualize the family tree.")
+                    tk.END,
+                    _(
+                        "No deceased person set. Please set a deceased person to visualize the family tree."
+                    ),
                 )
         except Exception as e:
             self.text_view.insert(tk.END, "\n\n")
-            self.text_view.insert(tk.END, _("Error generating graphical representation: {error}", error=str(e)))
+            self.text_view.insert(
+                tk.END,
+                _("Error generating graphical representation: {error}", error=str(e)),
+            )
 
     def show_graphviz_not_installed(self):
         """Show a message that Graphviz is not installed and provide installation instructions."""
         self.text_view.insert(
-            tk.END, _("Graphviz is not installed. Please install it to visualize the family tree graphically.")
+            tk.END,
+            _(
+                "Graphviz is not installed. Please install it to visualize the family tree graphically."
+            ),
         )
         self.text_view.insert(tk.END, "\n\n")
 
@@ -508,23 +577,34 @@ class MwareethGUI:
         if platform.system() == "Windows":
             self.text_view.insert(tk.END, _("To install Graphviz on Windows:"))
             self.text_view.insert(tk.END, "\n1. ")
-            self.text_view.insert(tk.END, _("Download and install Graphviz from https://graphviz.org/download/"))
+            self.text_view.insert(
+                tk.END,
+                _("Download and install Graphviz from https://graphviz.org/download/"),
+            )
             self.text_view.insert(tk.END, "\n2. ")
-            self.text_view.insert(tk.END, _("Add the Graphviz bin directory to your PATH"))
+            self.text_view.insert(
+                tk.END, _("Add the Graphviz bin directory to your PATH")
+            )
             self.text_view.insert(tk.END, "\n3. ")
-            self.text_view.insert(tk.END, _("Install the Python package: pip install graphviz"))
+            self.text_view.insert(
+                tk.END, _("Install the Python package: pip install graphviz")
+            )
         elif platform.system() == "Darwin":  # macOS
             self.text_view.insert(tk.END, _("To install Graphviz on macOS:"))
             self.text_view.insert(tk.END, "\n1. ")
             self.text_view.insert(tk.END, _("Using Homebrew: brew install graphviz"))
             self.text_view.insert(tk.END, "\n2. ")
-            self.text_view.insert(tk.END, _("Install the Python package: pip install graphviz"))
+            self.text_view.insert(
+                tk.END, _("Install the Python package: pip install graphviz")
+            )
         else:  # Linux
             self.text_view.insert(tk.END, _("To install Graphviz on Linux:"))
             self.text_view.insert(tk.END, "\n1. ")
             self.text_view.insert(tk.END, _("Using apt: sudo apt-get install graphviz"))
             self.text_view.insert(tk.END, "\n2. ")
-            self.text_view.insert(tk.END, _("Install the Python package: pip install graphviz"))
+            self.text_view.insert(
+                tk.END, _("Install the Python package: pip install graphviz")
+            )
 
     def zoom_in(self):
         """Zoom in on the graph."""
@@ -554,8 +634,12 @@ class MwareethGUI:
                 if hasattr(self, "current_image_path") and self.current_image_path:
                     # Load the original image and resize it
                     self.image = tk.PhotoImage(file=self.current_image_path)
-                    self.image = self.image.subsample(int(1 / self.zoom_level) if self.zoom_level < 1 else 1)
-                    self.image = self.image.zoom(int(self.zoom_level) if self.zoom_level > 1 else 1)
+                    self.image = self.image.subsample(
+                        int(1 / self.zoom_level) if self.zoom_level < 1 else 1
+                    )
+                    self.image = self.image.zoom(
+                        int(self.zoom_level) if self.zoom_level > 1 else 1
+                    )
 
                     # Update the image in the label
                     self.image_label.configure(image=self.image)
@@ -590,11 +674,17 @@ class MwareethGUI:
                 canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
                 # Add scrollbars
-                scrollbar_y = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+                scrollbar_y = ttk.Scrollbar(
+                    frame, orient=tk.VERTICAL, command=canvas.yview
+                )
                 scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-                scrollbar_x = ttk.Scrollbar(new_window, orient=tk.HORIZONTAL, command=canvas.xview)
+                scrollbar_x = ttk.Scrollbar(
+                    new_window, orient=tk.HORIZONTAL, command=canvas.xview
+                )
                 scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
-                canvas.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+                canvas.configure(
+                    yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set
+                )
 
                 # Load the image
                 image = tk.PhotoImage(file=self.current_image_path)
@@ -614,12 +704,18 @@ class MwareethGUI:
                 control_frame.pack(fill=tk.X, padx=5, pady=5)
 
                 zoom_in_btn = ttk.Button(
-                    control_frame, text="+", width=2, command=lambda: self.zoom_image(canvas, image_label, image, 1.2)
+                    control_frame,
+                    text="+",
+                    width=2,
+                    command=lambda: self.zoom_image(canvas, image_label, image, 1.2),
                 )
                 zoom_in_btn.pack(side=tk.LEFT, padx=2)
 
                 zoom_out_btn = ttk.Button(
-                    control_frame, text="-", width=2, command=lambda: self.zoom_image(canvas, image_label, image, 0.8)
+                    control_frame,
+                    text="-",
+                    width=2,
+                    command=lambda: self.zoom_image(canvas, image_label, image, 0.8),
                 )
                 zoom_out_btn.pack(side=tk.LEFT, padx=2)
 
@@ -647,9 +743,17 @@ class MwareethGUI:
                 new_window.geometry(f"{width}x{height}")
 
             except Exception as e:
-                messagebox.showerror(_("Error"), _("Failed to open image in new window: {error}", error=str(e)))
+                messagebox.showerror(
+                    _("Error"),
+                    _("Failed to open image in new window: {error}", error=str(e)),
+                )
         else:
-            messagebox.showinfo(_("Info"), _("No image to display. Please generate a family tree visualization first."))
+            messagebox.showinfo(
+                _("Info"),
+                _(
+                    "No image to display. Please generate a family tree visualization first."
+                ),
+            )
 
     def zoom_image(self, canvas, label, original_image, factor):
         """Zoom the image in the new window."""
@@ -694,12 +798,19 @@ class MwareethGUI:
         label.configure(image=original_image)
 
         # Update the canvas scrollregion
-        canvas.config(scrollregion=(0, 0, original_image.width(), original_image.height()))
+        canvas.config(
+            scrollregion=(0, 0, original_image.width(), original_image.height())
+        )
 
     def save_image(self):
         """Save the current family tree image to a file."""
         if not hasattr(self, "current_image_path") or not self.current_image_path:
-            messagebox.showinfo(_("Info"), _("No image to save. Please generate a family tree visualization first."))
+            messagebox.showinfo(
+                _("Info"),
+                _(
+                    "No image to save. Please generate a family tree visualization first."
+                ),
+            )
             return
 
         self.save_image_from_path(self.current_image_path)
@@ -730,14 +841,18 @@ class MwareethGUI:
             import shutil
 
             shutil.copy2(image_path, file_path)
-            messagebox.showinfo(_("Success"), _("Image saved successfully to {path}", path=file_path))
+            messagebox.showinfo(
+                _("Success"), _("Image saved successfully to {path}", path=file_path)
+            )
         except Exception as e:
-            messagebox.showerror(_("Error"), _("Failed to save image: {error}", error=str(e)))
+            messagebox.showerror(
+                _("Error"), _("Failed to save image: {error}", error=str(e))
+            )
 
     def calculate_inheritance(self) -> None:
         """Calculate and display the inheritance shares."""
         try:
-            tree = self.builder.build()
+            # build tree if needed
 
             # Enable the text widget for editing
             self.inheritance_text.config(state=tk.NORMAL)
@@ -747,7 +862,9 @@ class MwareethGUI:
 
             # Add a placeholder for inheritance calculation
             # In a real implementation, this would call the inheritance calculation logic
-            self.inheritance_text.insert(tk.END, _("Inheritance calculation not yet implemented"))
+            self.inheritance_text.insert(
+                tk.END, _("Inheritance calculation not yet implemented")
+            )
 
             # Disable the text widget again
             self.inheritance_text.config(state=tk.DISABLED)
@@ -759,7 +876,10 @@ class MwareethGUI:
     def new_family_tree(self) -> None:
         """Create a new family tree."""
         if messagebox.askyesno(
-            _("Confirm"), _("Are you sure you want to create a new family tree? Any unsaved changes will be lost.")
+            _("Confirm"),
+            _(
+                "Are you sure you want to create a new family tree? Any unsaved changes will be lost."
+            ),
         ):
             self.builder = FamilyTreeBuilder()
             self.current_file = None
@@ -769,7 +889,8 @@ class MwareethGUI:
     def open_file(self) -> None:
         """Open a family tree from a file."""
         file_path = filedialog.askopenfilename(
-            title=_("Open Family Tree"), filetypes=[(_("JSON Files"), "*.json"), (_("All Files"), "*.*")]
+            title=_("Open Family Tree"),
+            filetypes=[(_("JSON Files"), "*.json"), (_("All Files"), "*.*")],
         )
 
         if not file_path:
@@ -797,7 +918,9 @@ class MwareethGUI:
             with open(self.current_file, "w") as f:
                 json.dump(self.builder.to_dict(), f, indent=2)
 
-            self.status_var.set(_("Saved family tree to {file}", file=self.current_file))
+            self.status_var.set(
+                _("Saved family tree to {file}", file=self.current_file)
+            )
         except Exception as e:
             messagebox.showerror(_("Error"), str(e))
 
@@ -839,7 +962,9 @@ class MwareethGUI:
             # Show success message
             messagebox.showinfo(_("Info"), _("Language changed successfully."))
         except ValueError as e:
-            messagebox.showerror(_("Error"), _("Failed to change language: {error}", error=str(e)))
+            messagebox.showerror(
+                _("Error"), _("Failed to change language: {error}", error=str(e))
+            )
 
     def set_text_direction(self, direction: str) -> None:
         """
@@ -856,7 +981,9 @@ class MwareethGUI:
 
         if direction == "rtl":
             # Set RTL for the entire application
-            self.root.tk.call("source", os.path.join(os.path.dirname(__file__), "assets", "rtl.tcl"))
+            self.root.tk.call(
+                "source", os.path.join(os.path.dirname(__file__), "assets", "rtl.tcl")
+            )
 
             # Update the layout of frames
             for widget in self.root.winfo_children():
@@ -864,7 +991,9 @@ class MwareethGUI:
                     self.update_frame_direction(widget, "rtl")
         else:
             # Set LTR for the entire application
-            self.root.tk.call("source", os.path.join(os.path.dirname(__file__), "assets", "ltr.tcl"))
+            self.root.tk.call(
+                "source", os.path.join(os.path.dirname(__file__), "assets", "ltr.tcl")
+            )
 
             # Update the layout of frames
             for widget in self.root.winfo_children():
@@ -888,17 +1017,29 @@ class MwareethGUI:
                         # Swap LEFT and RIGHT for RTL
                         if direction == "rtl" and pack_info["side"] == tk.LEFT:
                             child.pack_forget()
-                            child.pack(side=tk.RIGHT, **{k: v for k, v in pack_info.items() if k != "side"})
+                            child.pack(
+                                side=tk.RIGHT,
+                                **{k: v for k, v in pack_info.items() if k != "side"},
+                            )
                         elif direction == "rtl" and pack_info["side"] == tk.RIGHT:
                             child.pack_forget()
-                            child.pack(side=tk.LEFT, **{k: v for k, v in pack_info.items() if k != "side"})
+                            child.pack(
+                                side=tk.LEFT,
+                                **{k: v for k, v in pack_info.items() if k != "side"},
+                            )
                         elif direction == "ltr" and pack_info["side"] == tk.LEFT:
                             child.pack_forget()
-                            child.pack(side=tk.LEFT, **{k: v for k, v in pack_info.items() if k != "side"})
+                            child.pack(
+                                side=tk.LEFT,
+                                **{k: v for k, v in pack_info.items() if k != "side"},
+                            )
                         elif direction == "ltr" and pack_info["side"] == tk.RIGHT:
                             child.pack_forget()
-                            child.pack(side=tk.RIGHT, **{k: v for k, v in pack_info.items() if k != "side"})
-                except:
+                            child.pack(
+                                side=tk.RIGHT,
+                                **{k: v for k, v in pack_info.items() if k != "side"},
+                            )
+                except Exception:
                     # Skip if pack_info fails
                     pass
 
@@ -932,7 +1073,9 @@ class MwareethGUI:
         if hasattr(self, "inheritance_text"):
             self.inheritance_text.config(state=tk.NORMAL)
             self.inheritance_text.delete(1.0, tk.END)
-            self.inheritance_text.insert(tk.END, _("Inheritance calculation not yet implemented"))
+            self.inheritance_text.insert(
+                tk.END, _("Inheritance calculation not yet implemented")
+            )
             self.inheritance_text.config(state=tk.DISABLED)
 
         # Update forms with text direction
@@ -943,7 +1086,9 @@ class MwareethGUI:
             self.relationship_form.update_language(self.text_direction)
 
         # Update family tree view
-        if hasattr(self, "family_tree_view") and hasattr(self.family_tree_view, "update_language"):
+        if hasattr(self, "family_tree_view") and hasattr(
+            self.family_tree_view, "update_language"
+        ):
             self.family_tree_view.update_language()
 
         # Update all widgets starting from the root window
@@ -969,19 +1114,25 @@ class MwareethGUI:
                 return
 
             # Update button text (both ttk and tk)
-            if isinstance(widget, (ttk.Button, tk.Button)) and hasattr(widget, "configure"):
+            if isinstance(widget, (ttk.Button, tk.Button)) and hasattr(
+                widget, "configure"
+            ):
                 text = widget.cget("text")
                 if text:
                     widget.configure(text=_(text))
 
             # Update label text (both ttk and tk)
-            elif isinstance(widget, (ttk.Label, tk.Label)) and hasattr(widget, "configure"):
+            elif isinstance(widget, (ttk.Label, tk.Label)) and hasattr(
+                widget, "configure"
+            ):
                 text = widget.cget("text")
                 if text and not isinstance(text, tk.StringVar):
                     widget.configure(text=_(text))
 
             # Update LabelFrame text and anchor (both ttk and tk)
-            elif isinstance(widget, (ttk.LabelFrame, tk.LabelFrame)) and hasattr(widget, "configure"):
+            elif isinstance(widget, (ttk.LabelFrame, tk.LabelFrame)) and hasattr(
+                widget, "configure"
+            ):
                 text = widget.cget("text")
                 if text:
                     # Update text with translation
@@ -990,18 +1141,26 @@ class MwareethGUI:
                     # Update label anchor based on text direction
                     if hasattr(self, "text_direction"):
                         if self.text_direction == "rtl":
-                            widget.configure(labelanchor="ne")  # Northeast anchor for RTL
+                            widget.configure(
+                                labelanchor="ne"
+                            )  # Northeast anchor for RTL
                         else:
-                            widget.configure(labelanchor="nw")  # Northwest anchor for LTR
+                            widget.configure(
+                                labelanchor="nw"
+                            )  # Northwest anchor for LTR
 
             # Update Radiobutton text (both ttk and tk)
-            elif isinstance(widget, (ttk.Radiobutton, tk.Radiobutton)) and hasattr(widget, "configure"):
+            elif isinstance(widget, (ttk.Radiobutton, tk.Radiobutton)) and hasattr(
+                widget, "configure"
+            ):
                 text = widget.cget("text")
                 if text:
                     widget.configure(text=_(text))
 
             # Update Checkbutton text (both ttk and tk)
-            elif isinstance(widget, (ttk.Checkbutton, tk.Checkbutton)) and hasattr(widget, "configure"):
+            elif isinstance(widget, (ttk.Checkbutton, tk.Checkbutton)) and hasattr(
+                widget, "configure"
+            ):
                 text = widget.cget("text")
                 if text:
                     widget.configure(text=_(text))
@@ -1024,7 +1183,9 @@ class MwareethGUI:
         """Show the about dialog."""
         messagebox.showinfo(
             _("About"),
-            _("Mwareeth - Islamic Inheritance Calculator\n\nA tool to calculate inheritance according to Islamic law."),
+            _(
+                "Mwareeth - Islamic Inheritance Calculator\n\nA tool to calculate inheritance according to Islamic law."
+            ),
         )
 
     def run(self) -> None:

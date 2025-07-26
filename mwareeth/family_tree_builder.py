@@ -5,45 +5,15 @@ from their inputs in an interactive and user-friendly way.
 
 from enum import IntEnum, auto
 from typing import Dict, List, Optional, Set, Tuple
-
-from .i18n import _, set_language, force_language, get_available_languages, pgettext
-
-# Try to import Graphviz, but don't fail if it's not installed
-try:
-    from graphviz import Digraph
-
-    GRAPHVIZ_AVAILABLE = True
-except ImportError:
-    GRAPHVIZ_AVAILABLE = False
-
-    # Define a dummy Digraph class to avoid "possibly unbound" errors
-    class Digraph:
-        """Dummy Digraph class when graphviz is not available."""
-
-        def __init__(self, comment="", strict=False):
-            self.comment = comment
-            self.strict = strict
-            self.source = "Graphviz not available"
-
-        def attr(self, *args, **kwargs):
-            """Dummy attr method."""
-            pass
-
-        def node(self, *args, **kwargs):
-            """Dummy node method."""
-            pass
-
-        def edge(self, *args, **kwargs):
-            """Dummy edge method."""
-            pass
-
-        def render(self, *args, **kwargs):
-            """Dummy render method."""
-            raise ImportError("Graphviz is not installed")
+import importlib.util
 
 
+from .i18n import _, set_language, force_language, get_available_languages
 from .entities.person import Gender, Person, Religion
 from .entities.family_tree import FamilyTree
+
+
+GRAPHVIZ_AVAILABLE = importlib.util.find_spec("graphviz") is not None
 
 
 class InteractiveBuildCommand(IntEnum):
@@ -115,13 +85,17 @@ class FamilyTreeBuilder:
             ValueError: If a person with the same name already exists or if invalid data is provided
         """
         if name in self.people:
-            raise ValueError(_("A person with the name '{name}' already exists", name=name))
+            raise ValueError(
+                _("A person with the name '{name}' already exists", name=name)
+            )
 
         # Convert gender string to Gender enum
         try:
             gender_enum = Gender[gender.upper()]
         except KeyError:
-            raise ValueError(_("Invalid gender: {gender}. Must be 'male' or 'female'", gender=gender))
+            raise ValueError(
+                _("Invalid gender: {gender}. Must be 'male' or 'female'", gender=gender)
+            )
 
         # Convert religion string to Religion enum
         try:
@@ -168,7 +142,9 @@ class FamilyTreeBuilder:
         self.deceased = self.people[name]
         return self.deceased
 
-    def add_relationship(self, person_name: str, relation_type: str, relative_name: str) -> Tuple[Person, Person]:
+    def add_relationship(
+        self, person_name: str, relation_type: str, relative_name: str
+    ) -> Tuple[Person, Person]:
         """
         Add a relationship between two people.
 
@@ -203,7 +179,9 @@ class FamilyTreeBuilder:
             person.add_spouse(relative)
             relative.add_spouse(person)
         else:
-            raise ValueError(_("Invalid relationship type: {relation}", relation=relation_type))
+            raise ValueError(
+                _("Invalid relationship type: {relation}", relation=relation_type)
+            )
 
         return person, relative
 
@@ -277,7 +255,9 @@ class FamilyTreeBuilder:
         for person in self.people.values():
             path = set()
             if self._has_circular_reference(person, visited, path):
-                errors.append(_("Circular reference detected involving {name}", name=person.name))
+                errors.append(
+                    _("Circular reference detected involving {name}", name=person.name)
+                )
                 errors.append(f"  - Visited: {', '.join(p.name for p in visited)}")
                 errors.append(f"  - Path: {', '.join(p.name for p in path)}")
 
@@ -285,11 +265,15 @@ class FamilyTreeBuilder:
         for name, person in self.people.items():
             # Check father-child consistency
             if person.father and person not in person.father.children:
-                errors.append(_("Inconsistent father-child relationship for {name}", name=name))
+                errors.append(
+                    _("Inconsistent father-child relationship for {name}", name=name)
+                )
 
             # Check mother-child consistency
             if person.mother and person not in person.mother.children:
-                errors.append(_("Inconsistent mother-child relationship for {name}", name=name))
+                errors.append(
+                    _("Inconsistent mother-child relationship for {name}", name=name)
+                )
 
             # Check spouse consistency
             for spouse in person.spouses:
@@ -304,7 +288,9 @@ class FamilyTreeBuilder:
 
         return errors
 
-    def _has_circular_reference(self, person: Person, visited: Set[Person], path: Set[Person]) -> bool:
+    def _has_circular_reference(
+        self, person: Person, visited: Set[Person], path: Set[Person]
+    ) -> bool:
         """
         Check if there's a circular reference in the family tree.
 
@@ -358,7 +344,9 @@ class FamilyTreeBuilder:
         # Validate the tree first
         errors = self.validate()
         if errors:
-            raise ValueError(_("Invalid family tree: {errors}", errors=", ".join(errors)))
+            raise ValueError(
+                _("Invalid family tree: {errors}", errors=", ".join(errors))
+            )
 
         # Check if deceased is set
         if not self.deceased:
@@ -483,7 +471,11 @@ class FamilyTreeBuilder:
             A FamilyTree instance
         """
         print(_("Welcome to the Family Tree Builder!"))
-        print(_("Let's start by adding the deceased person (the focal point of the tree)."))
+        print(
+            _(
+                "Let's start by adding the deceased person (the focal point of the tree)."
+            )
+        )
 
         # Add the deceased person
         name = input(f"{_('Name')}: ")
@@ -507,12 +499,17 @@ class FamilyTreeBuilder:
                 (InteractiveBuildCommand.ADD_PERSON, _("Add a person")),
                 (InteractiveBuildCommand.ADD_RELATIONSHIP, _("Add a relationship")),
                 (InteractiveBuildCommand.VISUALIZE, _("Visualize the family tree")),
-                (InteractiveBuildCommand.BUILD_FAMILY_TREE, _("Finish and build the family tree")),
+                (
+                    InteractiveBuildCommand.BUILD_FAMILY_TREE,
+                    _("Finish and build the family tree"),
+                ),
             ]
         )
         while True:
             print(f"\n{_('What would you like to do?')}")
-            print("\n".join(f"{command}. {help_text}" for command, help_text in commands))
+            print(
+                "\n".join(f"{command}. {help_text}" for command, help_text in commands)
+            )
             choice = input(f"{_('Enter your choice')} (1-{len(commands)}): ")
 
             try:
@@ -588,7 +585,9 @@ class FamilyTreeBuilder:
             print(_("Invalid relationship type: {relation}", relation=rel_choice))
             return
 
-        relative_name = input(f"{_('Enter the name of the {relation}', relation=rel_type)}: ")
+        relative_name = input(
+            f"{_('Enter the name of the {relation}', relation=rel_type)}: "
+        )
         if relative_name not in self.people:
             print(_("Person '{name}' does not exist", name=relative_name))
             return
@@ -616,7 +615,9 @@ class FamilyTreeBuilder:
             return
 
         if not GRAPHVIZ_AVAILABLE:
-            print(f"\n{_('Graphviz is not installed. Please install it to visualize the family tree.')}")
+            print(
+                f"\n{_('Graphviz is not installed. Please install it to visualize the family tree.')}"
+            )
             print(_("You can install it with: pip install graphviz"))
             print(_("You may also need to install the Graphviz system package."))
 
@@ -630,7 +631,9 @@ class FamilyTreeBuilder:
                 supported_languages = get_available_languages()
                 for i, lang in enumerate(supported_languages, 1):
                     print(f"{i}. {lang}")
-                lang = input(f"{_('Enter your choice')} (1-{len(supported_languages)}): ")
+                lang = input(
+                    f"{_('Enter your choice')} (1-{len(supported_languages)}): "
+                )
                 lang = supported_languages[int(lang) - 1]
             except (ValueError, IndexError):
                 print(_("Invalid choice. Please try again."))

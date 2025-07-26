@@ -5,44 +5,13 @@ This module provides visualizers for family trees.
 from abc import ABC, abstractmethod
 import tempfile
 from typing import Optional
-
-# Try to import Graphviz, but don't fail if it's not installed
-try:
-    from graphviz import Digraph
-
-    GRAPHVIZ_AVAILABLE = True
-except ImportError:
-    GRAPHVIZ_AVAILABLE = False
-
-    # Define a dummy Digraph class to avoid "possibly unbound" errors
-    class Digraph:
-        """Dummy Digraph class when graphviz is not available."""
-
-        def __init__(self, comment="", strict=False):
-            self.comment = comment
-            self.strict = strict
-            self.source = "Graphviz not available"
-
-        def attr(self, *args, **kwargs):
-            """Dummy attr method."""
-            pass
-
-        def node(self, *args, **kwargs):
-            """Dummy node method."""
-            pass
-
-        def edge(self, *args, **kwargs):
-            """Dummy edge method."""
-            pass
-
-        def render(self, *args, **kwargs):
-            """Dummy render method."""
-            raise ImportError("Graphviz is not installed")
-
+import importlib.util
 
 from .entities.family_tree import FamilyTree, RelationshipType
 from .entities.person import Gender
 from .i18n import _, pgettext
+
+GRAPHVIZ_AVAILABLE = importlib.util.find_spec("graphviz") is not None
 
 
 class FamilyTreeVisualizer(ABC):
@@ -88,7 +57,9 @@ class FamilyTreeTextVisualizer(FamilyTreeVisualizer):
         lines = []
 
         # Add the deceased person as the root
-        lines.append(f"{_('Deceased')}: {self.family_tree.deceased.name} ({self.family_tree.deceased.gender.value})")
+        lines.append(
+            f"{_('Deceased')}: {self.family_tree.deceased.name} ({self.family_tree.deceased.gender.value})"
+        )
         lines.append("")
 
         # Add ancestors
@@ -99,12 +70,12 @@ class FamilyTreeTextVisualizer(FamilyTreeVisualizer):
         if father:
             father_person = list(father)[0]
             lines.append(f"{_('father').capitalize()}: {father_person.name}")
-        
+
         mother = self.family_tree.get_relatives(RelationshipType.MOTHER)
         if mother:
             mother_person = list(mother)[0]
             lines.append(f"{_('mother').capitalize()}: {mother_person.name}")
-        
+
         # Grandparents
         grandfathers = self.family_tree.get_relatives(RelationshipType.GRANDFATHER)
         if grandfathers:
@@ -112,16 +83,16 @@ class FamilyTreeTextVisualizer(FamilyTreeVisualizer):
             for grandfather in grandfathers:
                 # Determine if paternal or maternal
                 lines.append(f"  - {grandfather.name}")
-        
+
         grandmothers = self.family_tree.get_relatives(RelationshipType.GRANDMOTHER)
         if grandmothers:
             lines.append(f"{_('Grandmothers')}:")
             for grandmother in grandmothers:
                 # Determine if paternal or maternal
                 lines.append(f"  - {grandmother.name}")
-        
+
         lines.append("")
-        
+
         # Add siblings
         brothers = self.family_tree.get_relatives(RelationshipType.BROTHER)
         sisters = self.family_tree.get_relatives(RelationshipType.SISTER)
@@ -180,7 +151,11 @@ class FamilyTreeTextVisualizer(FamilyTreeVisualizer):
                     if son.children:
                         lines.append(f"    {_('Grandchildren')}:")
                         for grandchild in son.children:
-                            gender = _("Son") if grandchild.gender == Gender.MALE else _("Daughter")
+                            gender = (
+                                _("Son")
+                                if grandchild.gender == Gender.MALE
+                                else _("Daughter")
+                            )
                             lines.append(f"      - {grandchild.name} ({gender})")
 
             if daughters:
@@ -191,7 +166,11 @@ class FamilyTreeTextVisualizer(FamilyTreeVisualizer):
                     if daughter.children:
                         lines.append(f"    {_('Grandchildren')}:")
                         for grandchild in daughter.children:
-                            gender = _("Son") if grandchild.gender == Gender.MALE else _("Daughter")
+                            gender = (
+                                _("Son")
+                                if grandchild.gender == Gender.MALE
+                                else _("Daughter")
+                            )
                             lines.append(f"      - {grandchild.name} ({gender})")
 
         return "\n".join(lines)
@@ -223,6 +202,8 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
         if not GRAPHVIZ_AVAILABLE:
             return "Graphviz is not installed. Please install it to visualize the family tree graphically."
 
+        Digraph = importlib.import_module("graphviz").Digraph
+
         # Create a new directed graph
         dot = Digraph(comment=_("Family Tree"), strict=False)
         dot.attr(rankdir="TB", size="8,8")
@@ -249,10 +230,18 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
             # Create label with person's details
             label = f"{name}"
             if person.birth_year:
-                prefix = pgettext("male", "Born") if person.gender == Gender.MALE else pgettext("female", "Born")
+                prefix = (
+                    pgettext("male", "Born")
+                    if person.gender == Gender.MALE
+                    else pgettext("female", "Born")
+                )
                 label += f"\n{prefix}: {person.birth_year}"
             if person.death_year:
-                prefix = pgettext("male", "Died") if person.gender == Gender.MALE else pgettext("female", "Died")
+                prefix = (
+                    pgettext("male", "Died")
+                    if person.gender == Gender.MALE
+                    else pgettext("female", "Died")
+                )
                 label += f"\n{prefix}: {person.death_year}"
 
             # Add the node
@@ -279,8 +268,19 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
         for name, person in people.items():
             for spouse in person.spouses:
                 if spouse.name in people and name < spouse.name:  # Only add once
-                    label = pgettext("male", "spouse") if person.gender == Gender.MALE else pgettext("female", "spouse")
-                    dot.edge(name, spouse.name, color="red", style="dashed", dir="none", label=label)
+                    label = (
+                        pgettext("male", "spouse")
+                        if person.gender == Gender.MALE
+                        else pgettext("female", "spouse")
+                    )
+                    dot.edge(
+                        name,
+                        spouse.name,
+                        color="red",
+                        style="dashed",
+                        dir="none",
+                        label=label,
+                    )
 
         return dot.source
 
@@ -296,12 +296,16 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
             The path to the rendered file
         """
         if not GRAPHVIZ_AVAILABLE:
-            raise ImportError("Graphviz is not installed. Please install it to visualize the family tree graphically.")
+            raise ImportError(
+                "Graphviz is not installed. Please install it to visualize the family tree graphically."
+            )
 
         # Create a temporary file if no path is provided
         if not path:
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
                 path = temp_file.name
+
+        Digraph = importlib.import_module("graphviz").Digraph
 
         # Create a new directed graph
         dot = Digraph(comment=_("Family Tree"), strict=False)
@@ -329,10 +333,18 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
             # Create label with person's details
             label = f"{name}"
             if person.birth_year:
-                prefix = pgettext("male", "Born") if person.gender == Gender.MALE else pgettext("female", "Born")
+                prefix = (
+                    pgettext("male", "Born")
+                    if person.gender == Gender.MALE
+                    else pgettext("female", "Born")
+                )
                 label += f"\n{prefix}: {person.birth_year}"
             if person.death_year:
-                prefix = pgettext("male", "Died") if person.gender == Gender.MALE else pgettext("female", "Died")
+                prefix = (
+                    pgettext("male", "Died")
+                    if person.gender == Gender.MALE
+                    else pgettext("female", "Died")
+                )
                 label += f"\n{prefix}: {person.death_year}"
 
             # Add the node
@@ -359,8 +371,19 @@ class FamilyTreeGraphvizVisualizer(FamilyTreeVisualizer):
         for name, person in people.items():
             for spouse in person.spouses:
                 if spouse.name in people and name < spouse.name:  # Only add once
-                    label = pgettext("male", "spouse") if person.gender == Gender.MALE else pgettext("female", "spouse")
-                    dot.edge(name, spouse.name, color="red", style="dashed", dir="none", label=label)
+                    label = (
+                        pgettext("male", "spouse")
+                        if person.gender == Gender.MALE
+                        else pgettext("female", "spouse")
+                    )
+                    dot.edge(
+                        name,
+                        spouse.name,
+                        color="red",
+                        style="dashed",
+                        dir="none",
+                        label=label,
+                    )
 
         # Render the graph
         try:

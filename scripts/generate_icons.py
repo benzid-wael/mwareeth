@@ -10,9 +10,8 @@ The icons are saved to the mwareeth/gui/assets/icons directory.
 """
 
 import os
-import sys
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
+from PIL import Image, ImageDraw
 import math
 
 # Ensure the script can be run from any directory
@@ -49,12 +48,44 @@ def hex_to_rgb(hex_color):
 def create_rounded_rectangle(draw, xy, radius, fill=None, outline=None, width=1):
     """Draw a rounded rectangle."""
     x1, y1, x2, y2 = xy
-    draw.rectangle((x1 + radius, y1, x2 - radius, y2), fill=fill, outline=outline, width=width)
-    draw.rectangle((x1, y1 + radius, x2, y2 - radius), fill=fill, outline=outline, width=width)
-    draw.pieslice((x1, y1, x1 + radius * 2, y1 + radius * 2), 180, 270, fill=fill, outline=outline, width=width)
-    draw.pieslice((x2 - radius * 2, y1, x2, y1 + radius * 2), 270, 360, fill=fill, outline=outline, width=width)
-    draw.pieslice((x1, y2 - radius * 2, x1 + radius * 2, y2), 90, 180, fill=fill, outline=outline, width=width)
-    draw.pieslice((x2 - radius * 2, y2 - radius * 2, x2, y2), 0, 90, fill=fill, outline=outline, width=width)
+    draw.rectangle(
+        (x1 + radius, y1, x2 - radius, y2), fill=fill, outline=outline, width=width
+    )
+    draw.rectangle(
+        (x1, y1 + radius, x2, y2 - radius), fill=fill, outline=outline, width=width
+    )
+    draw.pieslice(
+        (x1, y1, x1 + radius * 2, y1 + radius * 2),
+        180,
+        270,
+        fill=fill,
+        outline=outline,
+        width=width,
+    )
+    draw.pieslice(
+        (x2 - radius * 2, y1, x2, y1 + radius * 2),
+        270,
+        360,
+        fill=fill,
+        outline=outline,
+        width=width,
+    )
+    draw.pieslice(
+        (x1, y2 - radius * 2, x1 + radius * 2, y2),
+        90,
+        180,
+        fill=fill,
+        outline=outline,
+        width=width,
+    )
+    draw.pieslice(
+        (x2 - radius * 2, y2 - radius * 2, x2, y2),
+        0,
+        90,
+        fill=fill,
+        outline=outline,
+        width=width,
+    )
 
 
 def draw_islamic_pattern(draw, size, color, complexity=5, line_width=2):
@@ -86,13 +117,23 @@ def draw_tree_symbol(draw, xy, size, color, line_width=2):
     trunk_width = width // 5
     trunk_height = height // 2
     draw.rectangle(
-        (x + width // 2 - trunk_width // 2, y + height - trunk_height, x + width // 2 + trunk_width // 2, y + height),
+        (
+            x + width // 2 - trunk_width // 2,
+            y + height - trunk_height,
+            x + width // 2 + trunk_width // 2,
+            y + height,
+        ),
         fill=color,
     )
 
     # Draw branches (triangular top)
     draw.polygon(
-        [(x, y + height - trunk_height), (x + width // 2, y), (x + width, y + height - trunk_height)], fill=color
+        [
+            (x, y + height - trunk_height),
+            (x + width // 2, y),
+            (x + width, y + height - trunk_height),
+        ],
+        fill=color,
     )
 
 
@@ -102,7 +143,12 @@ def draw_inheritance_symbol(draw, xy, size, color, line_width=2):
 
     # Draw document
     create_rounded_rectangle(
-        draw, (x, y, x + width, y + height), radius=width // 10, fill=None, outline=color, width=line_width
+        draw,
+        (x, y, x + width, y + height),
+        radius=width // 10,
+        fill=None,
+        outline=color,
+        width=line_width,
     )
 
     # Draw crescent moon (Islamic symbol)
@@ -112,7 +158,12 @@ def draw_inheritance_symbol(draw, xy, size, color, line_width=2):
 
     # Outer circle
     draw.ellipse(
-        (moon_x - moon_radius, moon_y - moon_radius, moon_x + moon_radius, moon_y + moon_radius),
+        (
+            moon_x - moon_radius,
+            moon_y - moon_radius,
+            moon_x + moon_radius,
+            moon_y + moon_radius,
+        ),
         outline=color,
         width=line_width,
     )
@@ -121,7 +172,12 @@ def draw_inheritance_symbol(draw, xy, size, color, line_width=2):
     inner_radius = moon_radius * 0.8
     offset = moon_radius * 0.4
     draw.ellipse(
-        (moon_x - inner_radius + offset, moon_y - inner_radius, moon_x + inner_radius + offset, moon_y + inner_radius),
+        (
+            moon_x - inner_radius + offset,
+            moon_y - inner_radius,
+            moon_x + inner_radius + offset,
+            moon_y + inner_radius,
+        ),
         fill=color,
         outline=color,
         width=line_width,
@@ -130,17 +186,31 @@ def draw_inheritance_symbol(draw, xy, size, color, line_width=2):
     # Draw division lines (representing shares)
     # Horizontal division
     draw.line(
-        [(x + width // 6, y + height * 2 // 3), (x + width * 5 // 6, y + height * 2 // 3)], fill=color, width=line_width
+        [
+            (x + width // 6, y + height * 2 // 3),
+            (x + width * 5 // 6, y + height * 2 // 3),
+        ],
+        fill=color,
+        width=line_width,
     )
 
     # Vertical divisions (creating unequal shares - representing Islamic inheritance portions)
     third_point = x + width // 3
     two_thirds_point = x + width * 2 // 3
 
-    draw.line([(third_point, y + height * 2 // 3), (third_point, y + height * 5 // 6)], fill=color, width=line_width)
+    draw.line(
+        [(third_point, y + height * 2 // 3), (third_point, y + height * 5 // 6)],
+        fill=color,
+        width=line_width,
+    )
 
     draw.line(
-        [(two_thirds_point, y + height * 2 // 3), (two_thirds_point, y + height * 5 // 6)], fill=color, width=line_width
+        [
+            (two_thirds_point, y + height * 2 // 3),
+            (two_thirds_point, y + height * 5 // 6),
+        ],
+        fill=color,
+        width=line_width,
     )
 
     # Add small Arabic-style text suggestion (simplified)
@@ -161,7 +231,10 @@ def draw_inheritance_symbol(draw, xy, size, color, line_width=2):
     draw.line(
         [
             (third_point + (two_thirds_point - third_point) // 2, text_y),
-            (third_point + (two_thirds_point - third_point) // 2, text_y - small_text_width),
+            (
+                third_point + (two_thirds_point - third_point) // 2,
+                text_y - small_text_width,
+            ),
         ],
         fill=color,
         width=line_width,
@@ -171,7 +244,10 @@ def draw_inheritance_symbol(draw, xy, size, color, line_width=2):
     draw.line(
         [
             (two_thirds_point + (x + width * 5 // 6 - two_thirds_point) // 2, text_y),
-            (two_thirds_point + (x + width * 5 // 6 - two_thirds_point) // 2, text_y - small_text_width * 3 // 4),
+            (
+                two_thirds_point + (x + width * 5 // 6 - two_thirds_point) // 2,
+                text_y - small_text_width * 3 // 4,
+            ),
         ],
         fill=color,
         width=line_width,
@@ -184,14 +260,24 @@ def draw_calculation_symbol(draw, xy, size, color, line_width=2):
 
     # Draw calculator outline
     create_rounded_rectangle(
-        draw, (x, y, x + width, y + height), radius=width // 10, fill=None, outline=color, width=line_width
+        draw,
+        (x, y, x + width, y + height),
+        radius=width // 10,
+        fill=None,
+        outline=color,
+        width=line_width,
     )
 
     # Draw display
     display_height = height // 4
     create_rounded_rectangle(
         draw,
-        (x + width // 10, y + height // 10, x + width - width // 10, y + display_height),
+        (
+            x + width // 10,
+            y + height // 10,
+            x + width - width // 10,
+            y + display_height,
+        ),
         radius=width // 20,
         fill=None,
         outline=color,
@@ -209,7 +295,9 @@ def draw_calculation_symbol(draw, xy, size, color, line_width=2):
             button_x = start_x + col * (button_size + button_spacing)
             button_y = start_y + row * (button_size + button_spacing)
             draw.rectangle(
-                (button_x, button_y, button_x + button_size, button_y + button_size), outline=color, width=line_width
+                (button_x, button_y, button_x + button_size, button_y + button_size),
+                outline=color,
+                width=line_width,
             )
 
 
@@ -234,7 +322,6 @@ def draw_person_symbol(draw, xy, size, color, gender=None, line_width=2):
 
     # Draw body
     body_top_y = head_center_y + head_radius
-    body_height = height - body_top_y - height // 10
 
     if gender == "male":
         # Draw triangle body for male
@@ -261,7 +348,12 @@ def draw_person_symbol(draw, xy, size, color, gender=None, line_width=2):
 
         # Draw rounded bottom of dress
         draw.arc(
-            (x + width // 5, y + height - height // 2, x + width - width // 5, y + height),
+            (
+                x + width // 5,
+                y + height - height // 2,
+                x + width - width // 5,
+                y + height,
+            ),
             0,
             180,
             fill=color,
@@ -270,7 +362,12 @@ def draw_person_symbol(draw, xy, size, color, gender=None, line_width=2):
     else:
         # Draw rectangle body for neutral
         draw.rectangle(
-            (head_center_x - width // 6, body_top_y, head_center_x + width // 6, y + height - height // 10),
+            (
+                head_center_x - width // 6,
+                body_top_y,
+                head_center_x + width // 6,
+                y + height - height // 10,
+            ),
             outline=color,
             width=line_width,
         )
@@ -309,21 +406,35 @@ def draw_relationship_symbol(draw, xy, size, color, line_width=2):
 
     # Draw heart
     draw.pieslice(
-        (center_x - heart_size, center_y - heart_size // 2, center_x, center_y + heart_size // 2),
+        (
+            center_x - heart_size,
+            center_y - heart_size // 2,
+            center_x,
+            center_y + heart_size // 2,
+        ),
         180,
         0,
         outline=color,
         width=line_width,
     )
     draw.pieslice(
-        (center_x, center_y - heart_size // 2, center_x + heart_size, center_y + heart_size // 2),
+        (
+            center_x,
+            center_y - heart_size // 2,
+            center_x + heart_size,
+            center_y + heart_size // 2,
+        ),
         180,
         0,
         outline=color,
         width=line_width,
     )
     draw.polygon(
-        [(center_x - heart_size, center_y), (center_x, center_y + heart_size), (center_x + heart_size, center_y)],
+        [
+            (center_x - heart_size, center_y),
+            (center_x, center_y + heart_size),
+            (center_x + heart_size, center_y),
+        ],
         outline=color,
         width=line_width,
     )
@@ -338,7 +449,13 @@ def create_app_icon(size=(512, 512)):
     # Background with subtle Islamic pattern
     bg = Image.new("RGBA", size, hex_to_rgb(COLORS["light"]) + (200,))
     bg_draw = ImageDraw.Draw(bg)
-    draw_islamic_pattern(bg_draw, size, hex_to_rgb(COLORS["islamic_green"]) + (80,), complexity=8, line_width=1)
+    draw_islamic_pattern(
+        bg_draw,
+        size,
+        hex_to_rgb(COLORS["islamic_green"]) + (80,),
+        complexity=8,
+        line_width=1,
+    )
     img = Image.alpha_composite(img, bg)
     draw = ImageDraw.Draw(img)
 
@@ -354,11 +471,6 @@ def create_app_icon(size=(512, 512)):
         ),
         fill=hex_to_rgb(COLORS["secondary"]) + (230,),
     )
-
-    # Calculate sizes
-    margin = size[0] // 10
-    width = size[0] - 2 * margin
-    height = size[1] - 2 * margin
 
     # Draw a globe/world map (simplified) to represent different jurisdictions
     globe_radius = circle_radius * 0.7
@@ -400,7 +512,9 @@ def create_app_icon(size=(512, 512)):
         y1 = globe_center_y - int(globe_radius * math.sin(angle))
         x2 = globe_center_x + int(globe_radius * math.cos(angle))
         y2 = globe_center_y + int(globe_radius * math.sin(angle))
-        draw.line([(x1, y1), (x2, y2)], fill=hex_to_rgb(COLORS["neutral"]) + (100,), width=1)
+        draw.line(
+            [(x1, y1), (x2, y2)], fill=hex_to_rgb(COLORS["neutral"]) + (100,), width=1
+        )
 
     # Draw regions/jurisdictions (simplified)
     # These are abstract shapes representing different regions/jurisdictions
@@ -431,7 +545,9 @@ def create_app_icon(size=(512, 512)):
         y1 = globe_center_y - int(globe_radius * math.sin(angle))
         x2 = globe_center_x + int(globe_radius * math.cos(angle))
         y2 = globe_center_y + int(globe_radius * math.sin(angle))
-        draw.line([(x1, y1), (x2, y2)], fill=hex_to_rgb(COLORS["white"]) + (200,), width=3)
+        draw.line(
+            [(x1, y1), (x2, y2)], fill=hex_to_rgb(COLORS["white"]) + (200,), width=3
+        )
 
     # Draw Islamic symbol (crescent and star) at the top
     crescent_radius = globe_radius * 0.25
@@ -507,7 +623,10 @@ def create_app_icon(size=(512, 512)):
     # Division lines (representing shares)
     # Horizontal division
     draw.line(
-        [(doc_x + doc_width // 10, doc_y + doc_height // 2), (doc_x + doc_width * 9 // 10, doc_y + doc_height // 2)],
+        [
+            (doc_x + doc_width // 10, doc_y + doc_height // 2),
+            (doc_x + doc_width * 9 // 10, doc_y + doc_height // 2),
+        ],
         fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
         width=3,
     )
@@ -517,13 +636,19 @@ def create_app_icon(size=(512, 512)):
     two_thirds_point = doc_x + doc_width * 2 // 3
 
     draw.line(
-        [(third_point, doc_y + doc_height // 2), (third_point, doc_y + doc_height * 9 // 10)],
+        [
+            (third_point, doc_y + doc_height // 2),
+            (third_point, doc_y + doc_height * 9 // 10),
+        ],
         fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
         width=3,
     )
 
     draw.line(
-        [(two_thirds_point, doc_y + doc_height // 2), (two_thirds_point, doc_y + doc_height * 9 // 10)],
+        [
+            (two_thirds_point, doc_y + doc_height // 2),
+            (two_thirds_point, doc_y + doc_height * 9 // 10),
+        ],
         fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
         width=3,
     )
@@ -533,33 +658,63 @@ def create_app_icon(size=(512, 512)):
 
     # 1/8 (small share)
     small_x = doc_x + doc_width // 6
-    draw.text((small_x, fraction_y - doc_height // 10), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (small_x, fraction_y - doc_height // 10),
+        "1",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
     draw.line(
-        [(small_x - doc_width // 20, fraction_y), (small_x + doc_width // 20, fraction_y)],
+        [
+            (small_x - doc_width // 20, fraction_y),
+            (small_x + doc_width // 20, fraction_y),
+        ],
         fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
         width=2,
     )
-    draw.text((small_x, fraction_y + doc_height // 10), "8", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (small_x, fraction_y + doc_height // 10),
+        "8",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
 
     # 1/2 (large share)
     mid_x = doc_x + doc_width // 2
-    draw.text((mid_x, fraction_y - doc_height // 10), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (mid_x, fraction_y - doc_height // 10),
+        "1",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
     draw.line(
         [(mid_x - doc_width // 20, fraction_y), (mid_x + doc_width // 20, fraction_y)],
         fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
         width=2,
     )
-    draw.text((mid_x, fraction_y + doc_height // 10), "2", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (mid_x, fraction_y + doc_height // 10),
+        "2",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
 
     # 1/4 (medium share)
     large_x = doc_x + doc_width * 5 // 6
-    draw.text((large_x, fraction_y - doc_height // 10), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (large_x, fraction_y - doc_height // 10),
+        "1",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
     draw.line(
-        [(large_x - doc_width // 20, fraction_y), (large_x + doc_width // 20, fraction_y)],
+        [
+            (large_x - doc_width // 20, fraction_y),
+            (large_x + doc_width // 20, fraction_y),
+        ],
         fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
         width=2,
     )
-    draw.text((large_x, fraction_y + doc_height // 10), "4", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (large_x, fraction_y + doc_height // 10),
+        "4",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
 
     # Save in different sizes
     for icon_size in [16, 32, 48, 64, 128, 256, 512]:
@@ -567,7 +722,11 @@ def create_app_icon(size=(512, 512)):
         resized_img.save(icons_dir / f"app_icon_{icon_size}.png")
 
     # Create ICO file for Windows
-    img.save(icons_dir / "app_icon.ico", format="ICO", sizes=[(16, 16), (32, 32), (48, 48), (64, 64), (128, 128)])
+    img.save(
+        icons_dir / "app_icon.ico",
+        format="ICO",
+        sizes=[(16, 16), (32, 32), (48, 48), (64, 64), (128, 128)],
+    )
 
     # Create a favicon
     favicon = img.resize((32, 32), Image.LANCZOS)
@@ -597,7 +756,8 @@ def create_add_person_icon(size=(20, 20)):
 
     # Draw plus circle background
     draw.ellipse(
-        (plus_x, plus_y, plus_x + plus_size, plus_y + plus_size), fill=hex_to_rgb(COLORS["secondary"]) + (255,)
+        (plus_x, plus_y, plus_x + plus_size, plus_y + plus_size),
+        fill=hex_to_rgb(COLORS["secondary"]) + (255,),
     )
 
     # Draw plus symbol
@@ -644,7 +804,12 @@ def create_add_person_icon(size=(20, 20)):
     body_width = head_radius * 1.5
     body_height = person_size // 2
     draw.rectangle(
-        (head_center_x - body_width // 2, body_top_y, head_center_x + body_width // 2, body_top_y + body_height),
+        (
+            head_center_x - body_width // 2,
+            body_top_y,
+            head_center_x + body_width // 2,
+            body_top_y + body_height,
+        ),
         fill=hex_to_rgb(COLORS["accent"]) + (255,),
     )
 
@@ -667,13 +832,17 @@ def create_add_relationship_icon(size=(20, 20)):
 
     # Draw family tree structure (simplified)
     center_x = margin + width // 2
-    center_y = margin + height // 2
 
     # Draw parent node
     parent_y = margin + height // 4
     parent_radius = min(width, height) // 10
     draw.ellipse(
-        (center_x - parent_radius, parent_y - parent_radius, center_x + parent_radius, parent_y + parent_radius),
+        (
+            center_x - parent_radius,
+            parent_y - parent_radius,
+            center_x + parent_radius,
+            parent_y + parent_radius,
+        ),
         fill=hex_to_rgb(COLORS["purple"]) + (255,),
     )
 
@@ -736,7 +905,9 @@ def create_add_relationship_icon(size=(20, 20)):
         y1 = pattern_y + int(pattern_radius * 0.7 * math.sin(angle))
         x2 = pattern_x + int(pattern_radius * 0.7 * math.cos(angle + math.pi))
         y2 = pattern_y + int(pattern_radius * 0.7 * math.sin(angle + math.pi))
-        draw.line([(x1, y1), (x2, y2)], fill=hex_to_rgb(COLORS["purple"]) + (100,), width=1)
+        draw.line(
+            [(x1, y1), (x2, y2)], fill=hex_to_rgb(COLORS["purple"]) + (100,), width=1
+        )
 
     # Draw plus sign
     plus_size = large_size[0] // 5
@@ -745,7 +916,10 @@ def create_add_relationship_icon(size=(20, 20)):
     plus_thickness = max(2, large_size[0] // 24)
 
     # Draw plus circle background
-    draw.ellipse((plus_x, plus_y, plus_x + plus_size, plus_y + plus_size), fill=hex_to_rgb(COLORS["accent"]) + (255,))
+    draw.ellipse(
+        (plus_x, plus_y, plus_x + plus_size, plus_y + plus_size),
+        fill=hex_to_rgb(COLORS["accent"]) + (255,),
+    )
 
     # Draw plus symbol
     draw.rectangle(
@@ -831,7 +1005,9 @@ def create_calculate_inheritance_icon(size=(20, 20)):
     line_thickness = 2
 
     # 1
-    draw.text((half_x, numerator_y), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (half_x, numerator_y), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,)
+    )
     # Line
     draw.line(
         [(half_x - line_width // 4, line_y), (half_x + line_width // 4, line_y)],
@@ -839,12 +1015,16 @@ def create_calculate_inheritance_icon(size=(20, 20)):
         width=line_thickness,
     )
     # 2
-    draw.text((half_x, denominator_y), "2", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (half_x, denominator_y), "2", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,)
+    )
 
     # Draw 1/4
     quarter_x = calc_x + display_margin + 2 * fraction_spacing
     # 1
-    draw.text((quarter_x, numerator_y), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (quarter_x, numerator_y), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,)
+    )
     # Line
     draw.line(
         [(quarter_x - line_width // 4, line_y), (quarter_x + line_width // 4, line_y)],
@@ -852,12 +1032,18 @@ def create_calculate_inheritance_icon(size=(20, 20)):
         width=line_thickness,
     )
     # 4
-    draw.text((quarter_x, denominator_y), "4", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (quarter_x, denominator_y),
+        "4",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
 
     # Draw 1/8
     eighth_x = calc_x + display_margin + 3 * fraction_spacing
     # 1
-    draw.text((eighth_x, numerator_y), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (eighth_x, numerator_y), "1", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,)
+    )
     # Line
     draw.line(
         [(eighth_x - line_width // 4, line_y), (eighth_x + line_width // 4, line_y)],
@@ -865,7 +1051,11 @@ def create_calculate_inheritance_icon(size=(20, 20)):
         width=line_thickness,
     )
     # 8
-    draw.text((eighth_x, denominator_y), "8", fill=hex_to_rgb(COLORS["islamic_green"]) + (255,))
+    draw.text(
+        (eighth_x, denominator_y),
+        "8",
+        fill=hex_to_rgb(COLORS["islamic_green"]) + (255,),
+    )
 
     # Draw calculator buttons (simplified)
     button_start_y = calc_y + display_height + display_margin
@@ -924,7 +1114,11 @@ def create_visualize_tree_icon(size=(20, 20)):
 
     # Draw the arc
     if len(arrow_points) > 1:
-        draw.line(arrow_points, fill=hex_to_rgb(COLORS["secondary"]) + (255,), width=large_size[0] // 12)
+        draw.line(
+            arrow_points,
+            fill=hex_to_rgb(COLORS["secondary"]) + (255,),
+            width=large_size[0] // 12,
+        )
 
     # Draw arrowhead
     arrow_size = radius // 2
@@ -944,7 +1138,9 @@ def create_visualize_tree_icon(size=(20, 20)):
     )
 
     # Draw arrowhead
-    draw.polygon([point1, point2, point3], fill=hex_to_rgb(COLORS["secondary"]) + (255,))
+    draw.polygon(
+        [point1, point2, point3], fill=hex_to_rgb(COLORS["secondary"]) + (255,)
+    )
 
     # Resize to target size
     img = img.resize(size, Image.LANCZOS)
@@ -1120,7 +1316,11 @@ def create_deceased_icon(size=(20, 20)):
     width = size[0] - 2 * margin
     height = size[1] - 2 * margin
     draw_person_symbol(
-        draw, (margin, margin, width, height), (width, height), hex_to_rgb(COLORS["neutral"]) + (200,), line_width=2
+        draw,
+        (margin, margin, width, height),
+        (width, height),
+        hex_to_rgb(COLORS["neutral"]) + (200,),
+        line_width=2,
     )
 
     # Draw RIP text or cross symbol
@@ -1140,7 +1340,12 @@ def create_deceased_icon(size=(20, 20)):
         fill=hex_to_rgb(COLORS["black"]) + (200,),
     )
     draw.rectangle(
-        (cross_x, cross_y + cross_size // 3, cross_x + cross_size, cross_y + cross_size // 3 + cross_thickness),
+        (
+            cross_x,
+            cross_y + cross_size // 3,
+            cross_x + cross_size,
+            cross_y + cross_size // 3 + cross_thickness,
+        ),
         fill=hex_to_rgb(COLORS["black"]) + (200,),
     )
 
@@ -1153,8 +1358,8 @@ def create_all_icons():
     print("Generating application icons...")
 
     # Create main application icon
-    app_icon = create_app_icon()
-    print(f"Created main application icon in various sizes")
+    create_app_icon()
+    print("Created main application icon in various sizes")
 
     # Create function-specific icons
     create_add_person_icon()

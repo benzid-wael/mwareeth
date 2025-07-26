@@ -27,7 +27,13 @@ def check_and_install_package(package_name, extras=None):
         try:
             print(f"Installing {package_name}...")
             if extras:
-                cmd = [sys.executable, "-m", "pip", "install", f"{package_name}[{extras}]"]
+                cmd = [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    f"{package_name}[{extras}]",
+                ]
             else:
                 cmd = [sys.executable, "-m", "pip", "install", package_name]
 
@@ -57,14 +63,17 @@ def setup_macos_tkinter():
 
     # Check if Homebrew is installed
     try:
-        subprocess.run(["brew", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        subprocess.run(
+            ["brew", "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
         print("Homebrew is installed.")
     except (subprocess.SubprocessError, FileNotFoundError):
         print("Homebrew is not installed. Attempting to install...")
         try:
-            install_cmd = (
-                '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-            )
+            install_cmd = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
             print(f"Running: {install_cmd}")
             print("This may take a while and might require your password.")
             print("If this fails, please install Homebrew manually and try again.")
@@ -82,7 +91,9 @@ def setup_macos_tkinter():
 
     # Check if Tcl/Tk is installed
     try:
-        result = subprocess.run(["brew", "list", "tcl-tk"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.run(
+            ["brew", "list", "tcl-tk"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         if result.returncode != 0:
             print("Tcl/Tk is not installed with Homebrew. Attempting to install...")
             try:
@@ -102,7 +113,10 @@ def setup_macos_tkinter():
     # Get the Tcl/Tk installation path
     try:
         result = subprocess.run(
-            ["brew", "--prefix", "tcl-tk"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
+            ["brew", "--prefix", "tcl-tk"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
         )
         tcl_tk_path = result.stdout.decode("utf-8").strip()
         print(f"Found Tcl/Tk at: {tcl_tk_path}")
@@ -130,7 +144,9 @@ def run_gui_example():
     Returns:
         bool: True if the example script ran successfully, False otherwise.
     """
-    example_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "examples", "gui_example.py")
+    example_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "examples", "gui_example.py"
+    )
     if os.path.exists(example_path):
         try:
             print("Trying to run the GUI example script...")
@@ -151,9 +167,13 @@ def main():
     This function parses command-line arguments and launches either the CLI or GUI version
     of the application, depending on the arguments provided.
     """
-    parser = argparse.ArgumentParser(description="Mwareeth - Islamic Inheritance Calculator")
+    parser = argparse.ArgumentParser(
+        description="Mwareeth - Islamic Inheritance Calculator"
+    )
     parser.add_argument("--gui", action="store_true", help="Launch the GUI version")
-    parser.add_argument("--language", "-l", default="en", help="Language code (default: en)")
+    parser.add_argument(
+        "--language", "-l", default="en", help="Language code (default: en)"
+    )
     args = parser.parse_args()
 
     if args.gui:
@@ -168,7 +188,9 @@ def main():
         if not setup_macos_tkinter():
             print("Failed to set up Tkinter environment for macOS.")
             print("You can try running the GUI with the run_gui.sh script:")
-            script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", "run_gui.sh")
+            script_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), "scripts", "run_gui.sh"
+            )
             if os.path.exists(script_path):
                 print(f"  {script_path}")
             else:
@@ -197,7 +219,9 @@ def main():
             if platform.system() == "Darwin" and "tcl" in str(e).lower():
                 print("Tkinter could not initialize properly on macOS.")
                 print("You can try running the GUI with the run_gui.sh script:")
-                script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", "run_gui.sh")
+                script_path = os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)), "scripts", "run_gui.sh"
+                )
                 if os.path.exists(script_path):
                     print(f"  {script_path}")
                 else:

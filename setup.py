@@ -4,9 +4,11 @@ from setuptools import setup, find_packages
 from babel.messages import frontend as babel
 
 try:
-    from mwareeth import __version__
+    pass
 except SyntaxError as exc:
-    sys.stderr.write(f"Unable to import Babel ({exc}). Are you running a supported version of Python?\n")
+    sys.stderr.write(
+        f"Unable to import Babel ({exc}). Are you running a supported version of Python?\n"
+    )
     sys.exit(1)
 
 

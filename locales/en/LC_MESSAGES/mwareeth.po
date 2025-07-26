@@ -735,4 +735,3 @@ msgstr "Relationship types"
 #: mwareeth/gui/forms.py:257 mwareeth/gui/forms.py:298
 msgid "Relative:"
 msgstr ""
-

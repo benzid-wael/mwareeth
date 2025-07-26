@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This example demonstrates how to use the gettext-based internationalization (i18n) 
+This example demonstrates how to use the gettext-based internationalization (i18n)
 support in the mwareeth project.
 """
 

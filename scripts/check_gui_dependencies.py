@@ -5,18 +5,20 @@ Script to check if all the necessary dependencies for the Mwareeth GUI are insta
 
 import sys
 import importlib.util
-import os
 
 
-def check_module(module_name):
+def check_module(module_name, fail_if_missing=False):
     """Check if a module is installed."""
     spec = importlib.util.find_spec(module_name)
-    if spec is None:
-        print(f"❌ {module_name} is NOT installed")
-        return False
-    else:
+
+    if not spec and fail_if_missing:
+        raise ImportError(f"Module {module_name} is not installed")
+
+    if spec:
         print(f"✅ {module_name} is installed")
         return True
+    print(f"❌ {module_name} is NOT installed")
+    return False
 
 
 def main():
@@ -39,42 +41,14 @@ def main():
     # Check mwareeth modules
     print("\nChecking mwareeth modules:")
     try:
-        import mwareeth
+        check_module("mwareeth", fail_if_missing=True)
+        check_module("mwareeth.gui", fail_if_missing=True)
+        check_module("mwareeth.gui", fail_if_missing=True)
+        check_module("mwareeth.entities.person", fail_if_missing=True)
+        check_module("mwareeth.entities.family_tree", fail_if_missing=True)
+        check_module("mwareeth.i18n", fail_if_missing=True)
 
-        print("✅ mwareeth is installed")
-
-        # Check if the GUI module is available
-        try:
-            from mwareeth.gui import MwareethGUI
-
-            print("✅ mwareeth.gui is available")
-            gui_available = True
-        except ImportError as e:
-            print(f"❌ mwareeth.gui is NOT available: {e}")
-            gui_available = False
-
-        # Check if the entities module is available
-        try:
-            from mwareeth.entities.person import Gender, Religion
-            from mwareeth.entities.family_tree import FamilyTree, RelationshipType
-
-            print("✅ mwareeth.entities is available")
-            entities_available = True
-        except ImportError as e:
-            print(f"❌ mwareeth.entities is NOT available: {e}")
-            entities_available = False
-
-        # Check if the i18n module is available
-        try:
-            from mwareeth.i18n import _, set_language
-
-            print("✅ mwareeth.i18n is available")
-            i18n_available = True
-        except ImportError as e:
-            print(f"❌ mwareeth.i18n is NOT available: {e}")
-            i18n_available = False
-
-        mwareeth_installed = gui_available and entities_available and i18n_available
+        mwareeth_installed = True
     except ImportError as e:
         print(f"❌ mwareeth is NOT installed: {e}")
         mwareeth_installed = False
@@ -89,7 +63,9 @@ def main():
     if optional_installed:
         print("✅ All optional dependencies are installed")
     else:
-        print("⚠️ Some optional dependencies are missing (the GUI will still work, but with limited functionality)")
+        print(
+            "⚠️ Some optional dependencies are missing (the GUI will still work, but with limited functionality)"
+        )
 
     if mwareeth_installed:
         print("✅ All mwareeth modules are available")
@@ -106,7 +82,9 @@ def main():
         print("   pip install graphviz pillow")
     else:
         print("All dependencies are installed correctly!")
-        print("If you're still having issues, please check the error message and report it to the developers.")
+        print(
+            "If you're still having issues, please check the error message and report it to the developers."
+        )
 
 
 if __name__ == "__main__":

@@ -124,11 +124,15 @@ class TestFamilyTree(unittest.TestCase):
         """Test that ancestors are correctly processed."""
         # Check that the father relationship is correctly established
         self.assertIn(RelationshipType.FATHER, self.family_tree._relationships)
-        self.assertIn(self.father, self.family_tree.get_relatives(RelationshipType.FATHER))
+        self.assertIn(
+            self.father, self.family_tree.get_relatives(RelationshipType.FATHER)
+        )
 
         # Check that the mother relationship is correctly established
         self.assertIn(RelationshipType.MOTHER, self.family_tree._relationships)
-        self.assertIn(self.mother, self.family_tree.get_relatives(RelationshipType.MOTHER))
+        self.assertIn(
+            self.mother, self.family_tree.get_relatives(RelationshipType.MOTHER)
+        )
 
         # Check that grandparents are correctly established
         self.assertEqual(
@@ -243,7 +247,9 @@ class TestFamilyTree(unittest.TestCase):
         # Note: The current implementation only processes direct children, not grandchildren
         # If the implementation changes to include grandchildren, this test should be updated
         self.assertIn(grandson, family_tree.get_relatives(RelationshipType.GRANDSON))
-        self.assertIn(granddaughter, family_tree.get_relatives(RelationshipType.GRANDDAUGHTER))
+        self.assertIn(
+            granddaughter, family_tree.get_relatives(RelationshipType.GRANDDAUGHTER)
+        )
 
     def test_process_descendants_with_no_children(self):
         """Test that a family tree with no descendants is correctly processed."""

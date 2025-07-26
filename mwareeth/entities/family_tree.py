@@ -9,7 +9,6 @@ from enum import auto, Enum
 from typing import Dict, List, Optional, Set
 
 # Import the translator if available, otherwise use a simple translation function
-from ..i18n import _
 from .person import Gender, Person
 
 
@@ -204,7 +203,9 @@ class FamilyTree:
             deceased: The deceased person whose inheritance is being calculated
         """
         self.deceased = deceased
-        self._relationships: Dict[RelationshipType, Set[Relationship]] = defaultdict(set)
+        self._relationships: Dict[RelationshipType, Set[Relationship]] = defaultdict(
+            set
+        )
         self._generate_relationships()
 
     def get_relatives(self, relationship_type: RelationshipType) -> Set[Person]:
@@ -229,7 +230,9 @@ class FamilyTree:
         self._process_descendants()
         self._process_ancestors()
 
-    def _create_child_relationship(self, child: Person, parent_relationship: Relationship) -> Relationship:
+    def _create_child_relationship(
+        self, child: Person, parent_relationship: Relationship
+    ) -> Relationship:
         """
         Create a relationship for a child based on the parent's relationship.
 
@@ -241,7 +244,9 @@ class FamilyTree:
             A new relationship object for the child
         """
         # Determine the relationship type based on the parent's relationship and child's gender
-        relationship_type = CHILDREN_RELATIONSHIP_MAPPING[parent_relationship.relationship_type][child.gender]
+        relationship_type = CHILDREN_RELATIONSHIP_MAPPING[
+            parent_relationship.relationship_type
+        ][child.gender]
 
         # Determine the lineage type (which side of the family)
         lineage_type = parent_relationship.lineage_type
@@ -255,14 +260,23 @@ class FamilyTree:
             )
 
         # Create the child's lineage by extending the parent's lineage
-        child_lineage_type = RelationshipType.SON if child.gender == Gender.MALE else RelationshipType.DAUGHTER
+        child_lineage_type = (
+            RelationshipType.SON
+            if child.gender == Gender.MALE
+            else RelationshipType.DAUGHTER
+        )
         lineage = parent_relationship.lineage + [child_lineage_type]
 
         return Relationship(
-            person=child, relationship_type=relationship_type, lineage=lineage, lineage_type=lineage_type
+            person=child,
+            relationship_type=relationship_type,
+            lineage=lineage,
+            lineage_type=lineage_type,
         )
 
-    def _process_non_descendant_children(self, person: Person, relationship: Relationship) -> List[Relationship]:
+    def _process_non_descendant_children(
+        self, person: Person, relationship: Relationship
+    ) -> List[Relationship]:
         """
         Process the children of a person and create relationships for them.
 
@@ -296,10 +310,14 @@ class FamilyTree:
             A new relationship object for the parent
         """
         # Determine the relationship type (grandfather or grandmother)
-        relationship_type = RelationshipType.GRANDFATHER if is_father else RelationshipType.GRANDMOTHER
+        relationship_type = (
+            RelationshipType.GRANDFATHER if is_father else RelationshipType.GRANDMOTHER
+        )
 
         # Create the parent's lineage by extending the child's lineage
-        parent_lineage_type = RelationshipType.FATHER if is_father else RelationshipType.MOTHER
+        parent_lineage_type = (
+            RelationshipType.FATHER if is_father else RelationshipType.MOTHER
+        )
         lineage = child_relationship.lineage + [parent_lineage_type]
 
         return Relationship(
@@ -355,8 +373,12 @@ class FamilyTree:
                     stack.append(mother_relationship)
 
             # Process the person's children (siblings, cousins, etc.)
-            child_relationships = self._process_non_descendant_children(relationship.person, relationship)
-            stack.extend([rel for rel in child_relationships if id(rel.person) not in seen])
+            child_relationships = self._process_non_descendant_children(
+                relationship.person, relationship
+            )
+            stack.extend(
+                [rel for rel in child_relationships if id(rel.person) not in seen]
+            )
 
     def _process_descendants(self) -> None:
         """
@@ -368,10 +390,17 @@ class FamilyTree:
         # Start with the children of the deceased
         stack = []
         for child in self.deceased.children:
-            relationship_type = RelationshipType.SON if child.gender == Gender.MALE else RelationshipType.DAUGHTER
+            relationship_type = (
+                RelationshipType.SON
+                if child.gender == Gender.MALE
+                else RelationshipType.DAUGHTER
+            )
             stack.append(
                 Relationship(
-                    person=child, relationship_type=relationship_type, lineage=[relationship_type], lineage_type=None
+                    person=child,
+                    relationship_type=relationship_type,
+                    lineage=[relationship_type],
+                    lineage_type=None,
                 )
             )
 
@@ -392,14 +421,23 @@ class FamilyTree:
             # Process the person's children
             for grandchild in relationship.person.children:
                 relationship_type = (
-                    RelationshipType.GRANDSON if grandchild.gender == Gender.MALE else RelationshipType.GRANDDAUGHTER
+                    RelationshipType.GRANDSON
+                    if grandchild.gender == Gender.MALE
+                    else RelationshipType.GRANDDAUGHTER
                 )
                 lineage = relationship.lineage + [
-                    RelationshipType.SON if relationship.person.gender == Gender.MALE else RelationshipType.DAUGHTER
+                    (
+                        RelationshipType.SON
+                        if relationship.person.gender == Gender.MALE
+                        else RelationshipType.DAUGHTER
+                    )
                 ]
                 stack.append(
                     Relationship(
-                        person=grandchild, relationship_type=relationship_type, lineage=lineage, lineage_type=None
+                        person=grandchild,
+                        relationship_type=relationship_type,
+                        lineage=lineage,
+                        lineage_type=None,
                     )
                 )
 

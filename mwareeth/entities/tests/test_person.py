@@ -55,7 +55,11 @@ class TestPerson(unittest.TestCase):
 
         # Test with all parameters
         person = Person(
-            name="Full Test", gender=Gender.FEMALE, religion=Religion.CHRISTIANITY, birth_year=1980, death_year=2020
+            name="Full Test",
+            gender=Gender.FEMALE,
+            religion=Religion.CHRISTIANITY,
+            birth_year=1980,
+            death_year=2020,
         )
         self.assertEqual(person.name, "Full Test")
         self.assertEqual(person.gender, Gender.FEMALE)

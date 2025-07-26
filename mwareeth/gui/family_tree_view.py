@@ -8,17 +8,13 @@ import tempfile
 import platform
 import os
 import shutil
+import importlib.util
 
 from ..family_tree_builder import FamilyTreeBuilder
 from ..i18n import _
 
-# Try to import Graphviz, but don't fail if it's not installed
-try:
-    from graphviz import Digraph
 
-    GRAPHVIZ_AVAILABLE = True
-except ImportError:
-    GRAPHVIZ_AVAILABLE = False
+GRAPHVIZ_AVAILABLE = importlib.util.find_spec("graphviz")
 
 
 class FamilyTreeView(ttk.Frame):
@@ -92,7 +88,9 @@ class FamilyTreeView(ttk.Frame):
         self.text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5, side=tk.LEFT)
 
         # Add vertical scrollbar to text widget
-        text_scrollbar_y = ttk.Scrollbar(text_container, orient=tk.VERTICAL, command=self.text.yview)
+        text_scrollbar_y = ttk.Scrollbar(
+            text_container, orient=tk.VERTICAL, command=self.text.yview
+        )
         text_scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
         self.text.configure(yscrollcommand=text_scrollbar_y.set)
 
@@ -111,13 +109,26 @@ class FamilyTreeView(ttk.Frame):
         zoom_frame.pack(side=tk.LEFT, padx=5, pady=2)
 
         # Create zoom buttons in the zoom frame
-        zoom_in_btn = ttk.Button(zoom_frame, text="+", width=2, command=self.zoom_in, style="Control.TButton")
+        zoom_in_btn = ttk.Button(
+            zoom_frame, text="+", width=2, command=self.zoom_in, style="Control.TButton"
+        )
         zoom_in_btn.pack(side=tk.LEFT, padx=2, pady=2)
 
-        zoom_out_btn = ttk.Button(zoom_frame, text="-", width=2, command=self.zoom_out, style="Control.TButton")
+        zoom_out_btn = ttk.Button(
+            zoom_frame,
+            text="-",
+            width=2,
+            command=self.zoom_out,
+            style="Control.TButton",
+        )
         zoom_out_btn.pack(side=tk.LEFT, padx=2, pady=2)
 
-        reset_zoom_btn = ttk.Button(zoom_frame, text=_("Reset"), command=self.reset_zoom, style="Control.TButton")
+        reset_zoom_btn = ttk.Button(
+            zoom_frame,
+            text=_("Reset"),
+            command=self.reset_zoom,
+            style="Control.TButton",
+        )
         reset_zoom_btn.pack(side=tk.LEFT, padx=2, pady=2)
 
         # Create a sub-frame for image actions
@@ -126,7 +137,10 @@ class FamilyTreeView(ttk.Frame):
 
         # Button to open in new window
         open_window_btn = ttk.Button(
-            image_frame, text=_("Open in Window"), command=self.open_in_new_window, style="Control.TButton"
+            image_frame,
+            text=_("Open in Window"),
+            command=self.open_in_new_window,
+            style="Control.TButton",
         )
         open_window_btn.pack(side=tk.LEFT, padx=2, pady=2)
 
@@ -158,15 +172,23 @@ class FamilyTreeView(ttk.Frame):
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         # Add scrollbars to canvas
-        graph_scrollbar_y = ttk.Scrollbar(graph_container, orient=tk.VERTICAL, command=self.canvas.yview)
+        graph_scrollbar_y = ttk.Scrollbar(
+            graph_container, orient=tk.VERTICAL, command=self.canvas.yview
+        )
         graph_scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        graph_scrollbar_x = ttk.Scrollbar(graph_container, orient=tk.HORIZONTAL, command=self.canvas.xview)
+        graph_scrollbar_x = ttk.Scrollbar(
+            graph_container, orient=tk.HORIZONTAL, command=self.canvas.xview
+        )
         graph_scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
-        self.canvas.configure(yscrollcommand=graph_scrollbar_y.set, xscrollcommand=graph_scrollbar_x.set)
+        self.canvas.configure(
+            yscrollcommand=graph_scrollbar_y.set, xscrollcommand=graph_scrollbar_x.set
+        )
 
         # Create a frame for the image to enable zooming
         self.image_frame = ttk.Frame(self.canvas)
-        self.canvas_window = self.canvas.create_window(0, 0, anchor=tk.NW, window=self.image_frame)
+        self.canvas_window = self.canvas.create_window(
+            0, 0, anchor=tk.NW, window=self.image_frame
+        )
 
         # Create a label for displaying the image
         self.image_label = ttk.Label(self.image_frame)
@@ -211,8 +233,12 @@ class FamilyTreeView(ttk.Frame):
                 if hasattr(self, "current_image_path") and self.current_image_path:
                     # Load the original image and resize it
                     self.image = tk.PhotoImage(file=self.current_image_path)
-                    self.image = self.image.subsample(int(1 / self.zoom_level) if self.zoom_level < 1 else 1)
-                    self.image = self.image.zoom(int(self.zoom_level) if self.zoom_level > 1 else 1)
+                    self.image = self.image.subsample(
+                        int(1 / self.zoom_level) if self.zoom_level < 1 else 1
+                    )
+                    self.image = self.image.zoom(
+                        int(self.zoom_level) if self.zoom_level > 1 else 1
+                    )
 
                     # Update the image in the label
                     self.image_label.configure(image=self.image)
@@ -247,11 +273,17 @@ class FamilyTreeView(ttk.Frame):
                 canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
                 # Add scrollbars
-                scrollbar_y = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+                scrollbar_y = ttk.Scrollbar(
+                    frame, orient=tk.VERTICAL, command=canvas.yview
+                )
                 scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-                scrollbar_x = ttk.Scrollbar(new_window, orient=tk.HORIZONTAL, command=canvas.xview)
+                scrollbar_x = ttk.Scrollbar(
+                    new_window, orient=tk.HORIZONTAL, command=canvas.xview
+                )
                 scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
-                canvas.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+                canvas.configure(
+                    yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set
+                )
 
                 # Load the image
                 image = tk.PhotoImage(file=self.current_image_path)
@@ -271,12 +303,18 @@ class FamilyTreeView(ttk.Frame):
                 control_frame.pack(fill=tk.X, padx=5, pady=5)
 
                 zoom_in_btn = ttk.Button(
-                    control_frame, text="+", width=2, command=lambda: self.zoom_image(canvas, image_label, image, 1.2)
+                    control_frame,
+                    text="+",
+                    width=2,
+                    command=lambda: self.zoom_image(canvas, image_label, image, 1.2),
                 )
                 zoom_in_btn.pack(side=tk.LEFT, padx=2)
 
                 zoom_out_btn = ttk.Button(
-                    control_frame, text="-", width=2, command=lambda: self.zoom_image(canvas, image_label, image, 0.8)
+                    control_frame,
+                    text="-",
+                    width=2,
+                    command=lambda: self.zoom_image(canvas, image_label, image, 0.8),
                 )
                 zoom_out_btn.pack(side=tk.LEFT, padx=2)
 
@@ -304,9 +342,17 @@ class FamilyTreeView(ttk.Frame):
                 new_window.geometry(f"{width}x{height}")
 
             except Exception as e:
-                messagebox.showerror(_("Error"), _("Failed to open image in new window: {error}", error=str(e)))
+                messagebox.showerror(
+                    _("Error"),
+                    _("Failed to open image in new window: {error}", error=str(e)),
+                )
         else:
-            messagebox.showinfo(_("Info"), _("No image to display. Please generate a family tree visualization first."))
+            messagebox.showinfo(
+                _("Info"),
+                _(
+                    "No image to display. Please generate a family tree visualization first."
+                ),
+            )
 
     def zoom_image(self, canvas, label, original_image, factor):
         """Zoom the image in the new window."""
@@ -351,13 +397,18 @@ class FamilyTreeView(ttk.Frame):
         label.configure(image=original_image)
 
         # Update the canvas scrollregion
-        canvas.config(scrollregion=(0, 0, original_image.width(), original_image.height()))
+        canvas.config(
+            scrollregion=(0, 0, original_image.width(), original_image.height())
+        )
 
     def show_graphviz_not_installed(self):
         """Show a message that Graphviz is not installed and provide installation instructions."""
         self.text.delete(1.0, tk.END)
         self.text.insert(
-            tk.END, _("Graphviz is not installed. Please install it to visualize the family tree graphically.")
+            tk.END,
+            _(
+                "Graphviz is not installed. Please install it to visualize the family tree graphically."
+            ),
         )
         self.text.insert(tk.END, "\n\n")
 
@@ -365,23 +416,32 @@ class FamilyTreeView(ttk.Frame):
         if platform.system() == "Windows":
             self.text.insert(tk.END, _("To install Graphviz on Windows:"))
             self.text.insert(tk.END, "\n1. ")
-            self.text.insert(tk.END, _("Download and install Graphviz from https://graphviz.org/download/"))
+            self.text.insert(
+                tk.END,
+                _("Download and install Graphviz from https://graphviz.org/download/"),
+            )
             self.text.insert(tk.END, "\n2. ")
             self.text.insert(tk.END, _("Add the Graphviz bin directory to your PATH"))
             self.text.insert(tk.END, "\n3. ")
-            self.text.insert(tk.END, _("Install the Python package: pip install graphviz"))
+            self.text.insert(
+                tk.END, _("Install the Python package: pip install graphviz")
+            )
         elif platform.system() == "Darwin":  # macOS
             self.text.insert(tk.END, _("To install Graphviz on macOS:"))
             self.text.insert(tk.END, "\n1. ")
             self.text.insert(tk.END, _("Using Homebrew: brew install graphviz"))
             self.text.insert(tk.END, "\n2. ")
-            self.text.insert(tk.END, _("Install the Python package: pip install graphviz"))
+            self.text.insert(
+                tk.END, _("Install the Python package: pip install graphviz")
+            )
         else:  # Linux
             self.text.insert(tk.END, _("To install Graphviz on Linux:"))
             self.text.insert(tk.END, "\n1. ")
             self.text.insert(tk.END, _("Using apt: sudo apt-get install graphviz"))
             self.text.insert(tk.END, "\n2. ")
-            self.text.insert(tk.END, _("Install the Python package: pip install graphviz"))
+            self.text.insert(
+                tk.END, _("Install the Python package: pip install graphviz")
+            )
 
     def display_tree(self, builder: FamilyTreeBuilder) -> None:
         """
@@ -391,7 +451,11 @@ class FamilyTreeView(ttk.Frame):
             builder: The family tree builder containing the tree to display
         """
         # Import visualizers here to avoid circular imports
-        from ..visualizers import FamilyTreeTextVisualizer, FamilyTreeGraphvizVisualizer, GRAPHVIZ_AVAILABLE
+        from ..visualizers import (
+            FamilyTreeTextVisualizer,
+            FamilyTreeGraphvizVisualizer,
+            GRAPHVIZ_AVAILABLE,
+        )
 
         # Clear the text widget
         self.text.delete(1.0, tk.END)
@@ -411,7 +475,9 @@ class FamilyTreeView(ttk.Frame):
             if GRAPHVIZ_AVAILABLE:
                 try:
                     # Create a temporary file for the image
-                    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+                    with tempfile.NamedTemporaryFile(
+                        suffix=".png", delete=False
+                    ) as temp_file:
                         temp_path = temp_file.name
 
                     # Create a graphical visualizer and render the output
@@ -429,7 +495,9 @@ class FamilyTreeView(ttk.Frame):
 
                         # Update the canvas scrollregion to match the image size
                         self.image_label.update_idletasks()  # Make sure the label has been updated
-                        self.canvas.config(scrollregion=(0, 0, self.image.width(), self.image.height()))
+                        self.canvas.config(
+                            scrollregion=(0, 0, self.image.width(), self.image.height())
+                        )
 
                         # Reset zoom level
                         self.zoom_level = 1.0
@@ -441,36 +509,61 @@ class FamilyTreeView(ttk.Frame):
                         # It will be removed when a new visualization is generated or the application closes
                     except Exception as img_error:
                         self.text.insert(tk.END, "\n\n")
-                        self.text.insert(tk.END, _("Error displaying image: {error}", error=str(img_error)))
+                        self.text.insert(
+                            tk.END,
+                            _("Error displaying image: {error}", error=str(img_error)),
+                        )
                 except Exception as e:
                     self.text.insert(tk.END, "\n\n")
-                    self.text.insert(tk.END, _("Error generating graphical representation: {error}", error=str(e)))
+                    self.text.insert(
+                        tk.END,
+                        _(
+                            "Error generating graphical representation: {error}",
+                            error=str(e),
+                        ),
+                    )
 
                     # Check if the error is related to the Graphviz executable not being found
                     if "executable" in str(e).lower() and "not found" in str(e).lower():
                         self.text.insert(tk.END, "\n\n")
                         self.text.insert(
-                            tk.END, _("It seems the Graphviz executable is not installed or not in your PATH.")
+                            tk.END,
+                            _(
+                                "It seems the Graphviz executable is not installed or not in your PATH."
+                            ),
                         )
                         self.text.insert(tk.END, "\n")
                         self.text.insert(
-                            tk.END, _("Please install the Graphviz system package and make sure it's in your PATH.")
+                            tk.END,
+                            _(
+                                "Please install the Graphviz system package and make sure it's in your PATH."
+                            ),
                         )
         except ValueError as e:
             self.text.insert(tk.END, "\n\n")
-            self.text.insert(tk.END, _("Error building family tree: {error}", error=str(e)))
+            self.text.insert(
+                tk.END, _("Error building family tree: {error}", error=str(e))
+            )
 
             # Check if the error is related to no deceased person being set
             if "deceased" in str(e).lower():
                 self.text.insert(tk.END, "\n\n")
                 self.text.insert(
-                    tk.END, _("No deceased person set. Please set a deceased person to visualize the family tree.")
+                    tk.END,
+                    _(
+                        "No deceased person set. Please set a deceased person to visualize the family tree."
+                    ),
                 )
 
     def save_image(self):
         """Save the current family tree image to a file."""
         if not hasattr(self, "current_image_path") or not self.current_image_path:
-            messagebox.showinfo(_("Info"), _("No image to save. Please generate a family tree visualization first!"))
+            messagebox.showinfo(
+                _("Info"),
+                _(
+                    "No image to save. Please generate a family tree visualization first!"
+                ),
+            )
             return
 
         self.save_image_from_path(self.current_image_path)
@@ -499,9 +592,13 @@ class FamilyTreeView(ttk.Frame):
         try:
             # Copy the image file to the user-selected location
             shutil.copy2(image_path, file_path)
-            messagebox.showinfo(_("Success"), _("Image saved successfully to {path}", path=file_path))
+            messagebox.showinfo(
+                _("Success"), _("Image saved successfully to {path}", path=file_path)
+            )
         except Exception as e:
-            messagebox.showerror(_("Error"), _("Failed to save image: {error}", error=str(e)))
+            messagebox.showerror(
+                _("Error"), _("Failed to save image: {error}", error=str(e))
+            )
 
     def update_language(self) -> None:
         """Update the widget with the current language translations."""
@@ -519,7 +616,9 @@ class FamilyTreeView(ttk.Frame):
             for widget in self.text_view_tab.winfo_children():
                 if isinstance(widget, ttk.Frame):  # Control frame
                     for child in widget.winfo_children():
-                        if isinstance(child, ttk.Button) and "Refresh" in child.cget("text"):
+                        if isinstance(child, ttk.Button) and "Refresh" in child.cget(
+                            "text"
+                        ):
                             child.configure(text=_("Refresh View"))
 
         # Update all frames and buttons in the graphical view tab
